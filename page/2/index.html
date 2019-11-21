@@ -359,6 +359,42 @@ height:50vh;
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/06/01/typecho/" >
+            
+                <span>Typecho 反序列化RCE漏洞分析</span>
+        </a>
+        <div class="abstract-content">
+            前言最近想琢磨下PHP反序列化及POP链的构造，这个漏洞之前就听说了，而且影响挺大的，所以分析一波，学习下思路，利用思路还是挺巧妙的。
+漏洞分析漏洞点在根目录下的install.php文件中，搜索unserialize可以定位到
+
+未经过任何过滤直接反序列化操作，假如此处的__typecho_config变量可控，说明存在反序列漏洞，于是跟进Typecho_Cookie::get()方法
+
+先判断是否存在$_COOKIE[&#39;__typecho_config&#39;]，假如不存在就从POST中取得，然后返回，很明显传入反序列化的变量是可控的。这里Payload既可以通过POST直...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/06/01</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "unserialize">unserialize</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/05/28/rfi-getshell/" >
             
                 <span>RFI Getshell By SMB &amp; WebDav</span>
@@ -680,50 +716,6 @@ SYSVOL存储在
             <!-- date  -->
             <div class="abstract-date">
                 <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/04/09</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/03/31/IPentest-tunnel/" >
-            
-                <span>内网渗透--通信隧道</span>
-        </a>
-        <div class="abstract-content">
-            流量操控及内网穿透场景
-内网机器受到边界防火墙的限制，访问受限的网络环境
-使用隐蔽的手段逃避安全检查措施和溯源追踪
-在非受信任的网络中实现安全的数据传输
-
-重定向（Rdirection）端口转发
-传输使用的明文
-隧道 （Tunneling）
-隧道技术是一种通过使用互联网络的基本设施在网络之间传递数据的方式，使用隧道传递的数据（或负载）可以是不同协议的数据帧或包。隧道技术将其他协议的数据帧或者数据包重新封装然后通过隧道发送。新的帧头提供路由信息，以便互联网传递被封装的负载数据。    —-百度百科
-
-
-在不受信任的网络环境中实现安全的通信
-
-通常使用多种加密技术建立通信隧道
-
-点到点（IP...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/03/31</span>
             </div>
             <!-- tags  -->
             
@@ -1575,9 +1567,32 @@ SYSVOL存储在
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 47
+        Total : 48
         </div>
         <!-- search  -->
         
@@ -1590,6 +1605,11 @@ SYSVOL存储在
     
     <div class="archive-year"> 2019 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/13</span><a class="archive-post-title" href= "/2019/10/13/smtp/" >邮件安全简析</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -1840,9 +1860,9 @@ SYSVOL存储在
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
-    
         <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
+    
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
     
         <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
     
@@ -1873,6 +1893,8 @@ SYSVOL存储在
         <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
     
         <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
+    
+        <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
         <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
     

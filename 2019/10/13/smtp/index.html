@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Yoga7xm">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Yoga7xm">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>邮件安全简析 · Yoga7xm&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/human.ico" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Yoga7xm&#39;s Blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">邮件安全简析</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Yoga7xm's Blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            邮件安全简析
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "smtp">smtp</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">2.9k</span>阅读时长: <span class="post-count reading-time">12 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2019/10/13</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>邮件系统的几个概念：</p>
+<ul>
+<li>MUA： Mail User Agent ，邮件用户代理。也就是通常说的outlook、foxmail的收发管理软件， 假如MUA 是个网站，则称它为 webmail。</li>
+<li>MTA： Mail Transfer Agent，邮件传输代理。就是那些Email服务提供商，比如网易、新浪等等或者自己搭建的SMTP服务器</li>
+<li>MDA： Mail Delivery Agent，邮件投递代理。将MTA接收的信件依照信件的流向（根据头信息）将该信件放置到本机账户下的邮件文件中（收件箱），或者再经由MTA将信件送到下个MTA。</li>
+</ul>
+<hr>
+<p>综上，收发电子邮件的过程是：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">发件人 -&gt; MUA -&gt; MTA -&gt; ... -&gt; MTA -&gt; MDA &lt;- MUA &lt;- 收件人</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2019/10/13/smtp/email.png" alt></p>
+<p>MUA与MTA、MTA与MTA交互使用的是SMTP协议，默认25端口</p>
+<p>MDA与MUA交互使用的有两种协议：</p>
+<ol>
+<li>POP：因为目前是第三代，所以俗称POP3协议，默认110端口</li>
+<li>IMAP：不但能够读取邮件，还能直接操作MDA中存储的邮件，比如常见的从收件箱移到垃圾箱等等，默认143端口</li>
+</ol>
+<h2 id="SMTP-协议分析"><a href="#SMTP-协议分析" class="headerlink" title="SMTP 协议分析"></a>SMTP 协议分析</h2><p>本地搭建了一个smtp服务器并且配置了邮件客户端 ：<a href="https://xz.aliyun.com/t/3799#toc-0" target="_blank" rel="noopener">传送门</a></p>
+<p>设置了两个测试用户：<a href="mailto:admin@mail.ignite.lab" target="_blank" rel="noopener">admin@mail.ignite.lab</a>和qwer@mail.ignite.lab</p>
+<blockquote>
+<p> 电子邮件从客户机传输到服务器或从某一个服务器传输到另一个服务器使用的传输协议。 SMTP 是请求/响应协议，命令和响应都是基于 ASCII 文本，并以 CR 和 LF 符结束。响应包括一个表示返回状态的三位数字代码 </p>
+</blockquote>
+<h3 id="常见命令"><a href="#常见命令" class="headerlink" title="常见命令"></a>常见命令</h3><p><strong>HELO &amp; EHLO</strong></p>
+<p>这两个命令是用来向服务标识用户身份，服务器会返回状态码250，不需要进行认证。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HELO <span class="built_in">test</span></span><br><span class="line">250 mail.ignite.lab</span><br></pre></td></tr></table></figure>
+<p> 后者会返回支持的各种扩展的列表 </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">EHLO <span class="built_in">test</span></span><br><span class="line">250-mail.ignite.lab</span><br><span class="line">250-PIPELINING</span><br><span class="line">250-SIZE 10240000</span><br><span class="line">250-VRFY</span><br><span class="line">250-ETRN</span><br><span class="line">250-STARTTLS</span><br><span class="line">250-ENHANCEDSTATUSCODES</span><br><span class="line">250-8BITMIME</span><br><span class="line">250-DSN</span><br><span class="line">250-SMTPUTF8</span><br><span class="line">250 CHUNKING</span><br></pre></td></tr></table></figure>
+
+<p><strong>MAIL FROM</strong></p>
+<p>向邮件服务器声明邮件发送人地址，成功状态250。这里可以伪造任意发件人</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MAIL FROM:admin@qq.com</span><br><span class="line">250 2.1.0 Ok</span><br></pre></td></tr></table></figure>
+
+<p><strong>RCPT TO</strong></p>
+<p>声明邮件接收人，如果是一个真实存在的地址，返回成功状态250。 也可有多个RCPT TO </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">RCPT TO:qwer@mail.ignite.lab</span><br><span class="line">250 2.1.5 Ok</span><br><span class="line">RCPT TO:admin@mail.ignite.lab</span><br><span class="line">250 2.1.5 Ok</span><br></pre></td></tr></table></figure>
+
+<p><strong>DATA</strong></p>
+<p>开始传输邮件内容(正文，附件等)，成功返回354.最后以<code>.</code>结尾</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">DATA</span><br><span class="line">354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;</span><br><span class="line">Date: Thu, 10 Oct 2019 16:33:29 -0700</span><br><span class="line">From: admin&lt;admin@qq.com&gt;</span><br><span class="line">Subject: Test</span><br><span class="line">TO: qwer@mail.ignite.lab</span><br><span class="line"></span><br><span class="line">Hello,Test</span><br><span class="line">.</span><br><span class="line">250 2.0.0 Ok: queued as A6C9180AE6</span><br></pre></td></tr></table></figure>
+
+<p><strong>QUIT</strong></p>
+<p>请求退出，并断开 TCP 连接 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Quit</span><br><span class="line">221 2.0.0 Bye</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2019/10/13/smtp/telnet.png" alt></p>
+<p>如果配置了SPF,邮件服务器会去校验当前发件服务器IP是否满足配置的SPF规则.倘若不满足就会拒绝接受</p>
+<h3 id="抓包结果"><a href="#抓包结果" class="headerlink" title="抓包结果"></a>抓包结果</h3><p><img src="/2019/10/13/smtp/hello.png" alt></p>
+<h3 id="Swaks-伪造邮件"><a href="#Swaks-伪造邮件" class="headerlink" title="Swaks 伪造邮件"></a>Swaks 伪造邮件</h3><blockquote>
+<p> Swaks是一个功能强大，灵活，可编写脚本，面向事务的SMTP测试工具，由<a href="http://jetmore.org/john/" target="_blank" rel="noopener">John Jetmore</a>编写和维护。 </p>
+<p><a href="http://jetmore.org/john/code/swaks/" target="_blank" rel="noopener">项目传送门</a></p>
+</blockquote>
+<p>上面SMTP命令能够直接整合成一条命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swaks --to admin@mail.ignite.lab --from admin@qq.com --body Testswaks --header <span class="string">"Subject: Test"</span> --server mail.ignite.lab</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2019/10/13/smtp/test.png" alt></p>
+<p>还有其他的高级用法这里就按下不表了</p>
+<h3 id="SSRF＋SMTP"><a href="#SSRF＋SMTP" class="headerlink" title="SSRF＋SMTP"></a>SSRF＋SMTP</h3><p>Wireshark抓包全过程,筛选之后拿到原始数据,再转成gopher协议数据即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -v gopher://127.0.0.1:25/_%45%48%4c%4f%20%6d%61%69%6c%2e%69%67%6e%69%74%65%2e%6c%61%62%0d%0a%4d%41%49%4c%20%46%52%4f%4d%3a%3c%61%64%6d%69%6e%40%71%71%2e%63%6f%6d%3e%0d%0a%52%43%50%54%20%54%4f%3a%3c%61%64%6d%69%6e%40%6d%61%69%6c%2e%69%67%6e%69%74%65%2e%6c%61%62%3e%0d%0a%44%41%54%41%0d%0a%44%61%74%65%3a%20%54%68%75%2c%20%32%31%20%4e%6f%76%20%32%30%31%39%20%31%34%3a%31%39%3a%32%35%20%2b%30%38%30%30%0d%0a%54%6f%3a%20%61%64%6d%69%6e%40%6d%61%69%6c%2e%69%67%6e%69%74%65%2e%6c%61%62%0d%0a%46%72%6f%6d%3a%20%61%64%6d%69%6e%40%71%71%2e%63%6f%6d%0d%0a%53%75%62%6a%65%63%74%3a%20%54%65%73%74%0d%0a%4d%65%73%73%61%67%65%2d%49%64%3a%20%3c%32%30%31%39%31%31%32%31%31%34%31%39%32%35%2e%30%32%30%34%34%39%40%6d%61%69%6c%2e%69%67%6e%69%74%65%2e%6c%61%62%3e%0d%0a%58%2d%4d%61%69%6c%65%72%3a%20%73%77%61%6b%73%20%76%32%30%31%38%31%31%30%34%2e%30%20%6a%65%74%6d%6f%72%65%2e%6f%72%67%2f%6a%6f%68%6e%2f%63%6f%64%65%2f%73%77%61%6b%73%2f%0d%0a%0d%0a%54%65%73%74%73%77%61%6b%73%0d%0a%0d%0a%0d%0a%2e%0d%0a%51%55%49%54%0d%0a</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2019/10/13/smtp/gopher.png" alt></p>
+<p><strong>案例</strong></p>
+<p>SSRF 302跳转 + gopher + 邮件伪造: <a href="https://www.corben.io/hackertarget/" target="_blank" rel="noopener">传送门</a></p>
+<h2 id="邮件问题防御"><a href="#邮件问题防御" class="headerlink" title="邮件问题防御"></a>邮件问题防御</h2><p> 对于邮件安全，一般正确的配置SPF/DKIM/DMARC就能防止两种问题：邮件诈骗和邮件反向散射</p>
+<h3 id="SPF-记录"><a href="#SPF-记录" class="headerlink" title="SPF 记录"></a>SPF 记录</h3><blockquote>
+<p> SPF，全称为 Sender Policy Framework，即发件人策略框架 </p>
+<p>本质为一个DNS记录。</p>
+</blockquote>
+<p>当邮件服务器收到了一封邮件，从TCP连接中拿到源IP，并且声称(MAIL FROM命令)发件人是<code>xxx@xxx.com</code>。此时邮件服务器会去查询<code>xxx.com</code>的SPF记录。如果这个IP在该域SPF记录设置的IP段里,则服务器就认为这封邮件是合法的;如果不允许,通常会退信,或将其标记为垃圾/仿冒邮件</p>
+<p>配置语法: <a href="http://www.renfei.org/blog/introduction-to-spf.html" target="_blank" rel="noopener">传送门</a></p>
+<p>我们来看<code>qq.com</code>的spf记录</p>
+<p><img src="/2019/10/13/smtp/qq.png" alt></p>
+<p>这里引用了<code>spf.mail.qq.com</code>的记录,用同样的方式拿到了最终的IP段</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v=spf1 ip4:58.250.134.0/24 ip4:54.254.200.0/24 ip4:54.92.39.0/24  ip4:103.7.31.0/24 ip4:14.17.18.0/24 ip4:112.90.142.0/24 ip4:113.108.91.0/24 ip4:119.147.14.0/24 ip4:180.153.3.0/24 ip4:183.60.60.0/24 ip4:183.62.126.0/24 ip4:211.139.188.0/24 -all</span><br></pre></td></tr></table></figure>
+
+<p>但是也存在配置不当的情况.假如配置的SPF记录为:<code>v=spf1 ip4:111.111.111.0/24 -all</code>,只要这个IP段中的任何一台主机被Getshell了,就能轻松的Bypass SPF记录完成邮件伪造.</p>
+<h3 id="DKIM"><a href="#DKIM" class="headerlink" title="DKIM"></a>DKIM</h3><p>利用非对称加密的方式对发件人进行身份验证，产生两组密钥：公钥和私钥。公钥存在该域DNS的TXT记录中，而私钥会存放在邮件发送服务器中。在发送邮件的时候，发送方会利用本域私钥加密生成DKIM签名及相关信息插入邮件Header信息，发往收件人的邮件服务器。收件人的邮件服务器收到带有签名信息的邮件，先通过DNS获取公钥，然后验证签名的有效性，从而确认在邮件发送的过程中，防止邮件被恶意篡改，保证邮件的完整性</p>
+<p><strong>格式</strong></p>
+<p>来看一个实例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=sc.toutiao.com;</span><br><span class="line"> i=@sc.toutiao.com; q=dns/txt; s=mail; t=1573731988; h=sender : date :</span><br><span class="line"> from : to : message-id : subject : mime-version : content-type :</span><br><span class="line"> reply-to : from; bh=h7qGOhbcZfX+5zpybI6XPqyQN5cNv8XorZh81bBuYcc=;</span><br><span class="line"> b=DCy3MljFg24N4xbMVywmmyxEPeaOJzwU1U/Cjh4R2g69PO6mBrI1/clI4riYdOuk08UbY</span><br><span class="line"> nNtMXI0lNxTwJBJM8oe2waDW9+oEfWuoeCYvU8NHRnSBaUIOtCmUWtXM0XCG3iz/5CaSHNd</span><br><span class="line"> 4VDftIVlbFU3iXvrtjaGeKflbD4oQmI=</span><br></pre></td></tr></table></figure>
+
+<p>在这个签名中有几个重要的部分：</p>
+<ul>
+<li>a：用于生成签名的算法</li>
+<li>d： 签名方（即发件方）域名值，用于回溯查找公钥 </li>
+<li>h： 邮件头字段名称列表，作为参数参与签名值的计算</li>
+<li>bh：邮件正文的Hash</li>
+<li>s： 域名选择器，用于对域名进行分组管理，类似于域名的命名空间</li>
+<li>c：DKIM提出的两种标准化算法，用于确定邮件头和邮件内容在传输过程中的规范化标准，有simple和relaxed两种可选算法。</li>
+</ul>
+<blockquote>
+<p>Simple算法对邮件头和邮件内容的修改零容忍，relaxed可允许一些常见的修改，如空格替换、大小写转换等。</p>
+<p>参数值第一个用于规范邮件头，第二个用于规范邮件内容。默认均为simple/simple，如果仅给出1个算法，则该算法用于规范header，而body默认采用simple算法进行规范化。例如：”c=relaxed”就被视为对邮件头header采取relaxed算法，而body默认采用simple。</p>
+</blockquote>
+<ul>
+<li>b：签名的本身，包括h的字段，以及DKIM-Signature头本身。由于头部保保存的是整个正文的hash，所以b这一参数也可以作为电子签名。</li>
+<li>x： 签名过期时间，格式同t时间戳，表示一个绝对日期 </li>
+</ul>
+<p>组合的域名：<code>s+&quot;_domainkey&quot;+d</code>，也就是<code>mail._domainkey.sc.toutiao.com</code></p>
+<p><img src="/2019/10/13/smtp/rsa.png" alt></p>
+<h4 id="邮件内容签名——验证"><a href="#邮件内容签名——验证" class="headerlink" title="邮件内容签名——验证"></a>邮件内容签名——验证</h4><p><strong>签名过程</strong></p>
+<p>签名者根据c中的规范化参数选择simple或者relaxed算法对message body计算出hash值，然后将该Hash值转化成Base64格式，插入到签名head的bh字段中作为DKIM的Head Field参数值</p>
+<p><strong>验证过程</strong></p>
+<p>认证方也会根据c中的规范化算法的取值，计算出body的hash值，转换成Base64格式，与邮件头部的bh值进行比对，假如正确表明邮件内容信息完整，未被篡改</p>
+<h4 id="邮件头签名——验证"><a href="#邮件头签名——验证" class="headerlink" title="邮件头签名——验证"></a>邮件头签名——验证</h4><p><strong>签名过程</strong></p>
+<p>发送方用私钥加密邮件头的某些字段，并附上邮件内容的Hash值</p>
+<p><strong>验证过程</strong></p>
+<p>接收方从域名DNS的TXT记录获取到公钥，然后对加密的内容进行解密，然后进行邮件内容签名验证，如果通过验证说明该域名合法，反之判定为垃圾邮件</p>
+<h3 id="DMARC"><a href="#DMARC" class="headerlink" title="DMARC"></a>DMARC</h3><blockquote>
+<p>DMARC全称是Domain-based Message Authentication, Reporting and Conformance，基于现有的DKIM和SPF两大主流电子邮件安全协议，由Mail Sender方（域名拥有者Domain Owner）在DNS里声明自己采用该协议。当Mail Receiver方（其MTA需支持DMARC协议）收到该域发送过来的邮件时，则进行DMARC校验，若校验失败还需发送一封report到指定URI（常是一个邮箱地址） </p>
+</blockquote>
+<p><strong>核心过程</strong></p>
+<ol>
+<li>从邮件头提取From字段的domain作为域名A</li>
+<li>查询DNS，获取域名A的DMARC记录.若该域没有设置DMARC记录,忽略本次校验</li>
+<li>校验DKIM，若验证成功，则获取DKIM签名中字段d的值作为域名B.如果有多个DKIM签名验证通过，则域名B会存在多个</li>
+<li>校验SPF，若验证成功， 则获取本次SMTP会话中MAIL FROM字段作为域名C,只会存在一个域名</li>
+</ol>
+<p><strong>实例</strong></p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">v=DMARC1<span class="comment">; p=reject; pct=100;ruf=mailto:dmarc@yoga.com; rua=mailto:report@yoga.com</span></span><br></pre></td></tr></table></figure>
+
+<p>协议版本为DMARC1,接收方对(100%)进行检查,当检测到邮箱伪造时拒绝该邮件,并且将一段时间的汇总报告到指定邮箱中</p>
+<p>一些参数含义:</p>
+<ul>
+<li>p：用于告知收件方，当检测到某邮件存在伪造我（发件人）的情况，收件方要做出什么处理，处理方式从轻到重依次为：<strong>none为不作任何处理,相当于不做任何处理</strong>；quarantine为将邮件标记为垃圾邮件；reject为拒绝该邮件。初期建议设置为none。 </li>
+<li>rua: 用于在收件方检测后，将一段时间的汇总报告，发送到哪个邮箱地址 </li>
+<li>ruf: 用于当检测到伪造邮件时，收件方须将该伪造信息的报告发送到哪个邮箱地址 </li>
+</ul>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p> <a href="https://www.4hou.com/web/7857.html" target="_blank" rel="noopener">https://www.4hou.com/web/7857.html</a> </p>
+<p> <a href="https://xz.aliyun.com/t/3799#toc-0" target="_blank" rel="noopener">https://xz.aliyun.com/t/3799#toc-0</a> </p>
+<p> <a href="https://cloud.tencent.com/developer/article/1088818" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/1088818</a></p>
+<p> <a href="http://www.voidcn.com/article/p-ynmyhfmb-bhr.html" target="_blank" rel="noopener">http://www.voidcn.com/article/p-ynmyhfmb-bhr.html</a> </p>
+<p> <a href="https://www.xiaobo.li/?p=575" target="_blank" rel="noopener">https://www.xiaobo.li/?p=575</a> </p>
+<p> <a href="https://oddboy.cn/2019/反垃圾邮件技术及可能存在的问题-spf-dkim-dmarc/" target="_blank" rel="noopener">https://oddboy.cn/2019/%E5%8F%8D%E5%9E%83%E5%9C%BE%E9%82%AE%E4%BB%B6%E6%8A%80%E6%9C%AF%E5%8F%8A%E5%8F%AF%E8%83%BD%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98-spf-dkim-dmarc/</a> </p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2019/09/30/http/" title= "HTTP 请求走私">
+                    <div class="prevTitle">HTTP 请求走私</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto://yujianan1998@gmail.com" target="_blank" rel="noopener" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/Yoga7xm" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Abstract"><span class="toc-number">1.</span> <span class="toc-text">Abstract</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SMTP-协议分析"><span class="toc-number">2.</span> <span class="toc-text">SMTP 协议分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#常见命令"><span class="toc-number">2.1.</span> <span class="toc-text">常见命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#抓包结果"><span class="toc-number">2.2.</span> <span class="toc-text">抓包结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Swaks-伪造邮件"><span class="toc-number">2.3.</span> <span class="toc-text">Swaks 伪造邮件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SSRF＋SMTP"><span class="toc-number">2.4.</span> <span class="toc-text">SSRF＋SMTP</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#邮件问题防御"><span class="toc-number">3.</span> <span class="toc-text">邮件问题防御</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SPF-记录"><span class="toc-number">3.1.</span> <span class="toc-text">SPF 记录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DKIM"><span class="toc-number">3.2.</span> <span class="toc-text">DKIM</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#邮件内容签名——验证"><span class="toc-number">3.2.1.</span> <span class="toc-text">邮件内容签名——验证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#邮件头签名——验证"><span class="toc-number">3.2.2.</span> <span class="toc-text">邮件头签名——验证</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#DMARC"><span class="toc-number">3.3.</span> <span class="toc-text">DMARC</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">4.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 48
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/13</span><a class="archive-post-title" href= "/2019/10/13/smtp/" >邮件安全简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/30</span><a class="archive-post-title" href= "/2019/09/30/http/" >HTTP 请求走私</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/02</span><a class="archive-post-title" href= "/2019/09/02/rmi/" >RMI 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/23</span><a class="archive-post-title" href= "/2019/08/23/com/" >Commons-Collections 反序列化简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/30</span><a class="archive-post-title" href= "/2019/07/30/jackson/" >Jackson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/20</span><a class="archive-post-title" href= "/2019/07/20/fastjson/" >Fastjson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/23</span><a class="archive-post-title" href= "/2019/06/23/met1/" >Metinfo6.13 两处XSS漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/14</span><a class="archive-post-title" href= "/2019/06/14/suid/" >Linux Suid提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/06</span><a class="archive-post-title" href= "/2019/06/06/phpbb/" >phpBB 反序列化漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/04</span><a class="archive-post-title" href= "/2019/06/04/phar/" >PHP反序列化之phar</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/01</span><a class="archive-post-title" href= "/2019/06/01/typecho/" >Typecho 反序列化RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/28</span><a class="archive-post-title" href= "/2019/05/28/rfi-getshell/" >RFI Getshell By SMB & WebDav</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/20</span><a class="archive-post-title" href= "/2019/05/20/basedir/" >Open_basedir Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/15</span><a class="archive-post-title" href= "/2019/05/15/disable/" >disable_funcions Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/10</span><a class="archive-post-title" href= "/2019/05/10/cs2msf/" >CS shell 与 Msf session 转换</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/29</span><a class="archive-post-title" href= "/2019/04/29/lPentest-domain/" >内网渗透--横向移动(委派与中继)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/23</span><a class="archive-post-title" href= "/2019/04/23/IPentest-domain4/" >内网渗透--横向移动(SPN攻击)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/19</span><a class="archive-post-title" href= "/2019/04/19/lPentest-domain2/" >内网渗透--票据传递</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/12</span><a class="archive-post-title" href= "/2019/04/12/IPentest-domain3/" >内网渗透--Hash传递攻击</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span><a class="archive-post-title" href= "/2019/04/09/IPentest-admin/" >内网渗透--本机提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/31</span><a class="archive-post-title" href= "/2019/03/31/IPentest-tunnel/" >内网渗透--通信隧道</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/27</span><a class="archive-post-title" href= "/2019/03/27/IPentest-discover/" >内网渗透--内网探测</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/24</span><a class="archive-post-title" href= "/2019/03/24/IPentest-base/" >内网渗透--基础</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/21</span><a class="archive-post-title" href= "/2019/03/21/tp/" >Thinkphp5 RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/20</span><a class="archive-post-title" href= "/2019/02/20/cors/" >CORS & Jsonp Hijacking</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/15</span><a class="archive-post-title" href= "/2019/02/15/freshly/" >Vunlhub之freshly</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/02</span><a class="archive-post-title" href= "/2019/02/02/redis/" >浅谈Redis未授权攻击方式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/23</span><a class="archive-post-title" href= "/2019/01/23/leaks/" >Vulnhub之FristiLeaks</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/2019/01/15/box/" >Vulnhub之Billu_b0x</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/10</span><a class="archive-post-title" href= "/2019/01/10/born2boot/" >Vulnhub之born2boot</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/04</span><a class="archive-post-title" href= "/2019/01/04/Lazysysadmin/" >Vulnhub之Lazysysadmin</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/24</span><a class="archive-post-title" href= "/2018/12/24/cryptology/" >分组密码工作模式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/18</span><a class="archive-post-title" href= "/2018/12/18/Wakanda/" >Vulnhub之Wakanda</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/14</span><a class="archive-post-title" href= "/2018/12/14/bulldog/" >Vulnhub之bulldog</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/07</span><a class="archive-post-title" href= "/2018/12/07/YFCTF/" >YFCTF协议分析WP</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/03</span><a class="archive-post-title" href= "/2018/12/03/sqlilab/" >sqli-lab(54-65)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/02</span><a class="archive-post-title" href= "/2018/12/02/sqlila/" >sqli-lab(38-53)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/01</span><a class="archive-post-title" href= "/2018/12/01/sqlil/" >sqli-lab(23-37)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/2018/11/30/sqli/" >sqli-lab(1-22)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/28</span><a class="archive-post-title" href= "/2018/11/28/Git-study/" >Git-study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/26</span><a class="archive-post-title" href= "/2018/11/26/NCTF/" >NCTF-2018 WriteUp web</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/20</span><a class="archive-post-title" href= "/2018/11/20/xxe-study/" >XXE Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/17</span><a class="archive-post-title" href= "/2018/11/17/cg-ctf/" >CG-CTF WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/15</span><a class="archive-post-title" href= "/2018/11/15/ssrf-study/" >SSRF Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/14</span><a class="archive-post-title" href= "/2018/11/14/bar-ctf/" >实验吧CTF---WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/03</span><a class="archive-post-title" href= "/2018/11/03/deserialize/" >Java反序列化漏洞实践利用学习-(2)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/30</span><a class="archive-post-title" href= "/2018/10/30/web/" >记Weblogic反序列化的一次学习-(1)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/27</span><a class="archive-post-title" href= "/2018/10/27/Yoga/" >Hexo入坑记</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
+    
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="blog"><span class="iconfont-archer">&#xe606;</span>blog</span>
+    
+        <span class="sidebar-tag-name" data-tags="php"><span class="iconfont-archer">&#xe606;</span>php</span>
+    
+        <span class="sidebar-tag-name" data-tags="java"><span class="iconfont-archer">&#xe606;</span>java</span>
+    
+        <span class="sidebar-tag-name" data-tags="deserialize"><span class="iconfont-archer">&#xe606;</span>deserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="CORS"><span class="iconfont-archer">&#xe606;</span>CORS</span>
+    
+        <span class="sidebar-tag-name" data-tags="JSONP"><span class="iconfont-archer">&#xe606;</span>JSONP</span>
+    
+        <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
+    
+        <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserializable"><span class="iconfont-archer">&#xe606;</span>unserializable</span>
+    
+        <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
+    
+        <span class="sidebar-tag-name" data-tags="redis"><span class="iconfont-archer">&#xe606;</span>redis</span>
+    
+        <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
+    
+        <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
+    
+        <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
+    
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
+        <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
+        <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Yoga7xm"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+

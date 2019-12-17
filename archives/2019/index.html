@@ -346,38 +346,6 @@
     
     
     <article class="index-post">
-        <a class="abstract-title" href = "/2019/12/09/vulnstack3/" >
-            
-                <span>域渗透之vulnstack3</span>
-        </a>
-        <div class="abstract-content">
-            AbstractWeb入侵先来扫个端口
-123456789101112131415161718192021nmap -T4 -v -A 192.168.134.12922/tcp   open  ssh     OpenSSH 5.3 (protocol 2.0)| ssh-hostkey: |   1024 25:84:c6:cc:2c:8a:7b:8f:4a:7c:60:f1:a3:c9:b0:22 (DSA)|_  2048 58:d1:4c:59:2d:85:ae:07:69:24:0a:dd:72:0f:45:a5 (RSA)80/tcp   open  http    ngi...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/12/09</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnstack">vulnstack</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
         <a class="abstract-title" href = "/2019/12/06/offensive/" >
             
                 <span>域渗透之Offensive</span>
@@ -699,6 +667,44 @@ Fastjson通过bytecodes传入base64编码的恶意类字节码，自动调用get
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "java">java</a>
     
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "deserialize">deserialize</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/06/23/met1/" >
+            
+                <span>Metinfo6.13 两处XSS漏洞分析</span>
+        </a>
+        <div class="abstract-content">
+            前言马上要考试了，然后就简单的分析下俩个XSS的洞，开始准备考试了…
+XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利用上一处变量覆盖的点
+
+关键在这个update子句中，将authcode()处理后的$turefile写入到数据库中字段为met_adminfile，跟进函数authcode()
+
+用于进行加解密的函数，并没有对其内容进行检测、过滤。而该变量为数组$url_array[]倒数第二项。这里导入了admin/include/common.inc.php
+
+这里对传入的COOKIE、POST、GET的参数进行过滤，然后赋值到全局...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/06/23</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "XSS">XSS</a>
     
 </div>
             
@@ -1515,20 +1521,9 @@ Fastjson通过bytecodes传入base64编码的恶意类字节码，自动调用get
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 52
+        Total : 51
         </div>
         <!-- search  -->
         
@@ -1541,11 +1536,6 @@ Fastjson通过bytecodes传入base64编码的恶意类字节码，自动调用get
     
     <div class="archive-year"> 2019 </div>
     <ul class="year-list">
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">12/09</span><a class="archive-post-title" href= "/2019/12/09/vulnstack3/" >域渗透之vulnstack3</a>
-        </li>
     
     
         <li class="archive-post-item">
@@ -1864,9 +1854,9 @@ Fastjson通过bytecodes传入base64编码的恶意类字节码，自动调用get
     
         <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
-        <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
-    
         <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
+        <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     

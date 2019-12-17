@@ -359,6 +359,152 @@ height:50vh;
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/12/09/vulnstack3/" >
+            
+                <span>域渗透之vulnstack3</span>
+        </a>
+        <div class="abstract-content">
+            AbstractWeb入侵先来扫个端口
+123456789101112131415161718192021nmap -T4 -v -A 192.168.134.12922/tcp   open  ssh     OpenSSH 5.3 (protocol 2.0)| ssh-hostkey: |   1024 25:84:c6:cc:2c:8a:7b:8f:4a:7c:60:f1:a3:c9:b0:22 (DSA)|_  2048 58:d1:4c:59:2d:85:ae:07:69:24:0a:dd:72:0f:45:a5 (RSA)80/tcp   open  http    ngi...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/12/09</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnstack">vulnstack</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/12/06/offensive/" >
+            
+                <span>域渗透之Offensive</span>
+        </a>
+        <div class="abstract-content">
+            Abstract大佬分享的一个国外的靶场环境： 提取码 9i2x 
+网络拓扑图
+
+目前我们已经拥有了一个域内成员的机器，目标是拿下域控权限
+
+【注】目前遇见的几个坑点：
+
+Client每隔一段时间会自动重启
+SQL机器需要通过安装系统替换某个exe的方式重置本机管理员密码，然后退出域再加入域
+SQL的服务开机不会自启，需手动开启
+
+提权提供的账号是一个普通的小域成员账号，啥都干不了…这时候我们需尝试利用提供的PowerUp.ps1进行提权
+1powershell -exec bypass -Command "Import-Module .\PowerUp.ps1;Invoke-AllCh...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/12/06</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/12/03/vulnstack2/" >
+            
+                <span>域渗透之Vulnstack2</span>
+        </a>
+        <div class="abstract-content">
+            Abstract红日安全出的第二套靶机，主要还是内网渗透的:传送门
+【注】：Web这台机器的密码不是给出的那个密码，server08的机器利用替换osk.exe的方式将密码改了，然后进入C:\Oracle\Middleware\user_projects\domains\base_domain这个目录，运行bat文件来启动weblogic服务
+还有一点，将本机的VMnet8的ip改为192.168.111.1段
+Web入侵常规从web入手：192.168.111.80 然后扫一下端口
+1234567891011121314151617181920212223242526272829303...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/12/03</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnstack">vulnstack</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/11/23/vulnstack1/" >
+            
+                <span>域渗透之Vulnstack1</span>
+        </a>
+        <div class="abstract-content">
+            Abstract红日安全出的一套靶机系列之一，涉及到一些域渗透的手法: 传送门
+官方给出的网络拓扑图:
+
+
+下载下来之后导入到VMware虚拟机中,将物理机的VMNet8网段设置为192.168.52.1,手动启动win7的PHPStudy,就行了
+Web入侵从Web口入手: 192.168.52.143
+常规套路,扫下端口,就开了80和3306口
+123456789101112131415PORT     STATE SERVICE VERSION80/tcp   open  http    Apache httpd 2.4.23 ((Win32) OpenSSL/1.0.2j PHP...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/11/23</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnstack">vulnstack</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/10/13/smtp/" >
             
                 <span>邮件安全简析</span>
@@ -572,148 +718,10 @@ Fastjson通过bytecodes传入base64编码的恶意类字节码，自动调用get
         </div>
     </article>
     
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/06/23/met1/" >
-            
-                <span>Metinfo6.13 两处XSS漏洞分析</span>
-        </a>
-        <div class="abstract-content">
-            前言马上要考试了，然后就简单的分析下俩个XSS的洞，开始准备考试了…
-XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利用上一处变量覆盖的点
-
-关键在这个update子句中，将authcode()处理后的$turefile写入到数据库中字段为met_adminfile，跟进函数authcode()
-
-用于进行加解密的函数，并没有对其内容进行检测、过滤。而该变量为数组$url_array[]倒数第二项。这里导入了admin/include/common.inc.php
-
-这里对传入的COOKIE、POST、GET的参数进行过滤，然后赋值到全局...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/06/23</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "XSS">XSS</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/06/14/suid/" >
-            
-                <span>Linux Suid提权</span>
-        </a>
-        <div class="abstract-content">
-            前言Suid是Linux除rwx基本权限之外的一种特殊权限，与之对应的还有SGID、SBIT三种。该属性一般用在可执行文件上，当用户调用该命令时，用户的有效ID为命令文件的属主ID。
-12➜  tmp ll /usr/bin/passwd -rwsr-xr-x 1 root root 63K 7月  27  2018 /usr/bin/passwd
-
-其中文件属主的s标志代表设置的SUID属性
-SUID &amp; SGID &amp; SBITSUIDSUID，出现在二进制文件拥有者执行权限X上，标记为S，八进制数为4000。如果执行者有其对应执行权限X，那么在程序运行过程中，程序将获...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/06/14</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "Linux">Linux</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/06/06/phpbb/" >
-            
-                <span>phpBB 反序列化漏洞分析</span>
-        </a>
-        <div class="abstract-content">
-            前言最近刷小密圈的时候，看到了一个phar漏洞的实例，有点好奇在真实CMS中，这种反序列化如何利用，所以就来分析学习一波。
-漏洞分析phpBB是国外一个非常受欢迎的论坛CMS，3.2.3以下的版本存在phar反序列漏洞，可以在登录管理面板的情况下Get Shell
-触发点漏洞位于\includes\functions_acp.php:validate_config_vars()内，文件操作函数file_exists的变量$path可控，于是可以触发phar反序列化上传的恶意文件导致RCE
-
-回溯可以找到调用validate_config_vars()的地方，位于includes/acp/...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/06/06</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/06/04/phar/" >
-            
-                <span>PHP反序列化之phar</span>
-        </a>
-        <div class="abstract-content">
-            前言准备分析phpbbs反序列化的那个洞，正好是用phar协议反序列化操作然后去构造POP链RCE的，所以提前借助几个CTF题来熟悉下手法和思路
-Phar查看PHP文档对phar协议的简介
-
-Phar archives are best characterized as a convenient way to group several files into a single file. As such, a phar archive provides a way to distribute a complete PHP application in a single file and ...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/06/04</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "unserializable">unserializable</a>
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "ctf">ctf</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
     <!-- paginator  -->
     
     <nav class="page-nav">
-        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">NEXT &amp;#62;</a>
+        <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">NEXT &amp;#62;</a>
     </nav>
     
 </main>
@@ -1572,9 +1580,65 @@ Phar archives are best characterized as a convenient way to group several files 
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 48
+        Total : 52
         </div>
         <!-- search  -->
         
@@ -1587,6 +1651,26 @@ Phar archives are best characterized as a convenient way to group several files 
     
     <div class="archive-year"> 2019 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/09</span><a class="archive-post-title" href= "/2019/12/09/vulnstack3/" >域渗透之vulnstack3</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/2019/12/06/offensive/" >域渗透之Offensive</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/03</span><a class="archive-post-title" href= "/2019/12/03/vulnstack2/" >域渗透之Vulnstack2</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/23</span><a class="archive-post-title" href= "/2019/11/23/vulnstack1/" >域渗透之Vulnstack1</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -1887,6 +1971,8 @@ Phar archives are best characterized as a convenient way to group several files 
         <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
     
         <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
     

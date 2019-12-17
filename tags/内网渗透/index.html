@@ -346,6 +346,152 @@
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/12/09/vulnstack3/" >
+            
+                <span>域渗透之vulnstack3</span>
+        </a>
+        <div class="abstract-content">
+            AbstractWeb入侵先来扫个端口
+123456789101112131415161718192021nmap -T4 -v -A 192.168.134.12922/tcp   open  ssh     OpenSSH 5.3 (protocol 2.0)| ssh-hostkey: |   1024 25:84:c6:cc:2c:8a:7b:8f:4a:7c:60:f1:a3:c9:b0:22 (DSA)|_  2048 58:d1:4c:59:2d:85:ae:07:69:24:0a:dd:72:0f:45:a5 (RSA)80/tcp   open  http    ngi...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/12/09</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnstack">vulnstack</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/12/06/offensive/" >
+            
+                <span>域渗透之Offensive</span>
+        </a>
+        <div class="abstract-content">
+            Abstract大佬分享的一个国外的靶场环境： 提取码 9i2x 
+网络拓扑图
+
+目前我们已经拥有了一个域内成员的机器，目标是拿下域控权限
+
+【注】目前遇见的几个坑点：
+
+Client每隔一段时间会自动重启
+SQL机器需要通过安装系统替换某个exe的方式重置本机管理员密码，然后退出域再加入域
+SQL的服务开机不会自启，需手动开启
+
+提权提供的账号是一个普通的小域成员账号，啥都干不了…这时候我们需尝试利用提供的PowerUp.ps1进行提权
+1powershell -exec bypass -Command "Import-Module .\PowerUp.ps1;Invoke-AllCh...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/12/06</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/12/03/vulnstack2/" >
+            
+                <span>域渗透之Vulnstack2</span>
+        </a>
+        <div class="abstract-content">
+            Abstract红日安全出的第二套靶机，主要还是内网渗透的:传送门
+【注】：Web这台机器的密码不是给出的那个密码，server08的机器利用替换osk.exe的方式将密码改了，然后进入C:\Oracle\Middleware\user_projects\domains\base_domain这个目录，运行bat文件来启动weblogic服务
+还有一点，将本机的VMnet8的ip改为192.168.111.1段
+Web入侵常规从web入手：192.168.111.80 然后扫一下端口
+1234567891011121314151617181920212223242526272829303...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/12/03</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnstack">vulnstack</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/11/23/vulnstack1/" >
+            
+                <span>域渗透之Vulnstack1</span>
+        </a>
+        <div class="abstract-content">
+            Abstract红日安全出的一套靶机系列之一，涉及到一些域渗透的手法: 传送门
+官方给出的网络拓扑图:
+
+
+下载下来之后导入到VMware虚拟机中,将物理机的VMNet8网段设置为192.168.52.1,手动启动win7的PHPStudy,就行了
+Web入侵从Web口入手: 192.168.52.143
+常规套路,扫下端口,就开了80和3306口
+123456789101112131415PORT     STATE SERVICE VERSION80/tcp   open  http    Apache httpd 2.4.23 ((Win32) OpenSSL/1.0.2j PHP...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/11/23</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnstack">vulnstack</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/05/10/cs2msf/" >
             
                 <span>CS shell 与 Msf session 转换</span>
@@ -573,133 +719,11 @@ SYSVOL存储在
         </div>
     </article>
     
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/03/31/IPentest-tunnel/" >
-            
-                <span>内网渗透--通信隧道</span>
-        </a>
-        <div class="abstract-content">
-            流量操控及内网穿透场景
-内网机器受到边界防火墙的限制，访问受限的网络环境
-使用隐蔽的手段逃避安全检查措施和溯源追踪
-在非受信任的网络中实现安全的数据传输
-
-重定向（Rdirection）端口转发
-传输使用的明文
-隧道 （Tunneling）
-隧道技术是一种通过使用互联网络的基本设施在网络之间传递数据的方式，使用隧道传递的数据（或负载）可以是不同协议的数据帧或包。隧道技术将其他协议的数据帧或者数据包重新封装然后通过隧道发送。新的帧头提供路由信息，以便互联网传递被封装的负载数据。    —-百度百科
-
-
-在不受信任的网络环境中实现安全的通信
-
-通常使用多种加密技术建立通信隧道
-
-点到点（IP...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/03/31</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/03/27/IPentest-discover/" >
-            
-                <span>内网渗透--内网探测</span>
-        </a>
-        <div class="abstract-content">
-            前言
-目标资产信息搜集的程度，决定渗透过程的复杂程度。目标主机信息搜集的深度，决定后渗透权限持续把控。渗透的本质是信息搜集，而信息搜集整理为后续的情报跟进提供了强大的保证。                                                                                    —-Micropoor
-
-渗透的本质是信息收集
-本机信息收集
-基础信息：
-内网网段信息，查看网卡信息收集内部地址段的信息
-内网大小
-
-
-核心业务信息：
-
-内网OA办公系统、邮件服务器、网络监控系统、财务应用系统、核心产品源码（SVN服务器、git服务器等...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/03/27</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/03/24/IPentest-base/" >
-            
-                <span>内网渗透--基础</span>
-        </a>
-        <div class="abstract-content">
-            前话最近开始简简单单的捣鼓下内网渗透了，从基础开始磨
-域（Domain）用来描述一种系统架构，和”工作组”相对应，由工作组升级而来的高级架构，在域架构中，可以实现统一化管理。用户名和密码是放在域控制器去验证的
-最大好处：通过组策略来统一化管理    
-工作组架构：每台计算机都是平等的。     
-特性
-安全边界
-父域的域控并不能管理子域
-
-
-复制单元
-一个域中的所有DC的活动目录数据库都相互同步（备份域控BDC）
-多主复制和单主复制
-三个逻辑分区：Domain、Configration、Schema。在同一个域的DC，三个分区数据都同步；如果不是一个域中的DC，只同步后两个分区（父域和子...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/03/24</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
     <!-- paginator  -->
+    
+    <nav class="page-nav">
+        <span class="page-number current">1</span><a class="page-number" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/page/2/">2</a><a class="extend next" rel="next" href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/page/2/">NEXT &amp;#62;</a>
+    </nav>
     
 </main>
             <!-- profile -->
@@ -1460,9 +1484,65 @@ SYSVOL存储在
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 48
+        Total : 52
         </div>
         <!-- search  -->
         
@@ -1475,6 +1555,26 @@ SYSVOL存储在
     
     <div class="archive-year"> 2019 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/09</span><a class="archive-post-title" href= "/2019/12/09/vulnstack3/" >域渗透之vulnstack3</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/2019/12/06/offensive/" >域渗透之Offensive</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/03</span><a class="archive-post-title" href= "/2019/12/03/vulnstack2/" >域渗透之Vulnstack2</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/23</span><a class="archive-post-title" href= "/2019/11/23/vulnstack1/" >域渗透之Vulnstack1</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -1775,6 +1875,8 @@ SYSVOL存储在
         <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
     
         <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
     

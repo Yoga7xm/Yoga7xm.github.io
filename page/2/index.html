@@ -359,6 +359,88 @@ height:50vh;
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/07/20/fastjson/" >
+            
+                <span>Fastjson 反序列化漏洞简析</span>
+        </a>
+        <div class="abstract-content">
+            
+Fastjson是由阿里开发的JSON库，据说是最快的JSON库
+传送门：https://github.com/alibaba/fastjson
+
+环境搭建
+环境：fastjson1.2.24+tomcat8.5+jdk 1.8.0_102
+
+war包地址：传送门
+
+
+下载war包之后，首先利用tomcat部署完成解压，然后在IDEA中导入解压后的文件夹，配置外部的lib路径和Tomcat，运行即可
+
+TemplatesImpl 链
+Fastjson通过bytecodes传入base64编码的恶意类字节码，自动调用getoutputProperties()，而且会实例化传入的恶意类，调...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/07/20</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "java">java</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "deserialize">deserialize</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/06/23/met1/" >
+            
+                <span>Metinfo6.13 两处XSS漏洞分析</span>
+        </a>
+        <div class="abstract-content">
+            前言马上要考试了，然后就简单的分析下俩个XSS的洞，开始准备考试了…
+XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利用上一处变量覆盖的点
+
+关键在这个update子句中，将authcode()处理后的$turefile写入到数据库中字段为met_adminfile，跟进函数authcode()
+
+用于进行加解密的函数，并没有对其内容进行检测、过滤。而该变量为数组$url_array[]倒数第二项。这里导入了admin/include/common.inc.php
+
+这里对传入的COOKIE、POST、GET的参数进行过滤，然后赋值到全局...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/06/23</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "XSS">XSS</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/06/14/suid/" >
             
                 <span>Linux Suid提权</span>
@@ -621,93 +703,6 @@ CS中在目标机器上新增一个会话，并且新增一个监听器，使用
             <!-- date  -->
             <div class="abstract-date">
                 <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/05/10</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/04/29/lPentest-domain/" >
-            
-                <span>内网渗透--横向移动(委派与中继)</span>
-        </a>
-        <div class="abstract-content">
-            Kerberos委派攻击
-将域内用户的权限委派给服务账号，使得服务账号能以用户权限开展域内活动
-setspn -U -A variant/golden Alice设置为服务账户
-只有服务账户或者主机账户才有委派功能
-
-非约束委派
-过程
-用户向AS发送AS_REQ请求Forwardable TGT1（可转发TGT）
-AS返回TGT1和SessionKey[TGT1]
-用户向KDC发送AS_REQ请求Forwardable TGT2
-AS返回TGT2和SessionKey[TGT2]
-用户使用SessionKey[TGT1] 向TGS发送TGT1，请求与Server 1通信的Service ...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/04/29</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/04/23/IPentest-domain4/" >
-            
-                <span>内网渗透--横向移动(SPN攻击)</span>
-        </a>
-        <div class="abstract-content">
-            MS14-068简述MS14-068编号CVE-2014-6324，补丁为3011780，该漏洞允许域内任何一个普通用户，将自己提升至域管权限
-复现环境
-
-域控：server08.yogalab.com：192.168.1.240
-域内主机：win7.yogalab.com：192.168.1.241
-域外主机：192.168.1.164
-
-条件
-
-域成员账号密码
-域成员SID
-域控地址
-03以上服务器或PC
-
-流程
-
-利用ms14-068.py生成TGT票据
-
-1ms14-068.exe -u win7@yogalab.com -p win07.yoga.com -s S-1-5-21...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/04/23</span>
             </div>
             <!-- tags  -->
             
@@ -1627,9 +1622,45 @@ AS返回TGT2和SessionKey[TGT2]
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 51
+        Total : 53
         </div>
         <!-- search  -->
         
@@ -1645,6 +1676,11 @@ AS返回TGT2和SessionKey[TGT2]
     
     
         <li class="archive-post-item">
+            <span class="archive-post-date">12/29</span><a class="archive-post-title" href= "/2019/12/29/ant/" >Antsword Bypass_Disable_functions的五种模式简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
             <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/2019/12/06/offensive/" >域渗透之Offensive</a>
         </li>
     
@@ -1656,6 +1692,11 @@ AS返回TGT2和SessionKey[TGT2]
     
         <li class="archive-post-item">
             <span class="archive-post-date">11/23</span><a class="archive-post-title" href= "/2019/11/23/vulnstack1/" >域渗透之Vulnstack1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/22</span><a class="archive-post-title" href= "/2019/10/22/jwt/" >jwt</a>
         </li>
     
     
@@ -1934,6 +1975,8 @@ AS返回TGT2和SessionKey[TGT2]
     
         <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
     
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
     
         <span class="sidebar-tag-name" data-tags="unserializable"><span class="iconfont-archer">&#xe606;</span>unserializable</span>
@@ -1948,8 +1991,6 @@ AS返回TGT2和SessionKey[TGT2]
     
         <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
-        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
-    
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
         <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
@@ -1960,9 +2001,9 @@ AS返回TGT2和SessionKey[TGT2]
     
         <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
-        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
-    
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     

@@ -346,6 +346,93 @@
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/04/29/lPentest-domain/" >
+            
+                <span>内网渗透--横向移动(委派与中继)</span>
+        </a>
+        <div class="abstract-content">
+            Kerberos委派攻击
+将域内用户的权限委派给服务账号，使得服务账号能以用户权限开展域内活动
+setspn -U -A variant/golden Alice设置为服务账户
+只有服务账户或者主机账户才有委派功能
+
+非约束委派
+过程
+用户向AS发送AS_REQ请求Forwardable TGT1（可转发TGT）
+AS返回TGT1和SessionKey[TGT1]
+用户向KDC发送AS_REQ请求Forwardable TGT2
+AS返回TGT2和SessionKey[TGT2]
+用户使用SessionKey[TGT1] 向TGS发送TGT1，请求与Server 1通信的Service ...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/04/29</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/04/23/IPentest-domain4/" >
+            
+                <span>内网渗透--横向移动(SPN攻击)</span>
+        </a>
+        <div class="abstract-content">
+            MS14-068简述MS14-068编号CVE-2014-6324，补丁为3011780，该漏洞允许域内任何一个普通用户，将自己提升至域管权限
+复现环境
+
+域控：server08.yogalab.com：192.168.1.240
+域内主机：win7.yogalab.com：192.168.1.241
+域外主机：192.168.1.164
+
+条件
+
+域成员账号密码
+域成员SID
+域控地址
+03以上服务器或PC
+
+流程
+
+利用ms14-068.py生成TGT票据
+
+1ms14-068.exe -u win7@yogalab.com -p win07.yoga.com -s S-1-5-21...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/04/23</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/04/19/lPentest-domain2/" >
             
                 <span>内网渗透--票据传递</span>
@@ -647,82 +734,6 @@ http://www.a.com:8080/di...
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "CORS">CORS</a>
     
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "JSONP">JSONP</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/02/15/freshly/" >
-            
-                <span>Vunlhub之freshly</span>
-        </a>
-        <div class="abstract-content">
-            前言最近过年有点无聊，玩个靶机找找感觉
-环境搭建
-靶机              172.20.10.3
-攻击机kali    172.20.10.8
-攻击机Win10   172.20.10.6
-
-Play信息收集祭出nmap神器扫描下
-1234root@kali:~# nmap -sS -p- -A -v -T4 172.20.10.380/tcp   open  http     Apache httpd 2.4.7 ((Ubuntu))443/tcp  open  ssl/http Apache httpd8080/tcp open  http     Apache httpd
-...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/02/15</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnhub">vulnhub</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/02/02/redis/" >
-            
-                <span>浅谈Redis未授权攻击方式</span>
-        </a>
-        <div class="abstract-content">
-            0x01 Redis
-Redis是一个开源使用ANSI C语言编写、支持网络、可基于内存亦可持续化的日志型、Key-Value数据库，并提供多种语言的API。 
-
-0x02 漏洞产生详情Redis因配置不当可以未授权访问。 但是，一些Redis服务绑定到公共接口，甚至没有密码身份验证保护。 
-攻击者无需认证访问到内部数据，可以导致敏感信息泄露，也可以恶意执行flushall来清空所有数据。
-攻击者可以通过EVAL执行lua代码，或通过数据备份功能往磁盘写入后门文件。
-若Redis以root身份运行，攻击者可以给root账户写入ssh公钥文件，直接通过ssh登录受害服务器 
-
-0x03 L...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/02/02</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "redis">redis</a>
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "未授权">未授权</a>
     
 </div>
             
@@ -1539,9 +1550,45 @@ Redis是一个开源使用ANSI C语言编写、支持网络、可基于内存亦
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 51
+        Total : 53
         </div>
         <!-- search  -->
         
@@ -1557,6 +1604,11 @@ Redis是一个开源使用ANSI C语言编写、支持网络、可基于内存亦
     
     
         <li class="archive-post-item">
+            <span class="archive-post-date">12/29</span><a class="archive-post-title" href= "/2019/12/29/ant/" >Antsword Bypass_Disable_functions的五种模式简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
             <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/2019/12/06/offensive/" >域渗透之Offensive</a>
         </li>
     
@@ -1568,6 +1620,11 @@ Redis是一个开源使用ANSI C语言编写、支持网络、可基于内存亦
     
         <li class="archive-post-item">
             <span class="archive-post-date">11/23</span><a class="archive-post-title" href= "/2019/11/23/vulnstack1/" >域渗透之Vulnstack1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/22</span><a class="archive-post-title" href= "/2019/10/22/jwt/" >jwt</a>
         </li>
     
     
@@ -1846,6 +1903,8 @@ Redis是一个开源使用ANSI C语言编写、支持网络、可基于内存亦
     
         <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
     
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
     
         <span class="sidebar-tag-name" data-tags="unserializable"><span class="iconfont-archer">&#xe606;</span>unserializable</span>
@@ -1860,8 +1919,6 @@ Redis是一个开源使用ANSI C语言编写、支持网络、可基于内存亦
     
         <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
-        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
-    
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
         <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
@@ -1872,9 +1929,9 @@ Redis是一个开源使用ANSI C语言编写、支持网络、可基于内存亦
     
         <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
-        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
-    
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     

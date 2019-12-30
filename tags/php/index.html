@@ -346,6 +346,44 @@
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/12/29/ant/" >
+            
+                <span>Antsword Bypass_Disable_functions的五种模式简析</span>
+        </a>
+        <div class="abstract-content">
+            Abstract这几天不管是测试还是使用靶机都好几次遇上了Disabled Functions的情况，于是抽空来探究下插件的实现原理。
+项目传送门
+PHP-FPM/FastCGI配套使用蚁剑上的一个disable_functions项目：传送门
+用蚁剑直接连接一句话
+
+虚拟终端下执行命令失败，来看下phpinfo
+
+可以看到PHP是FPM/FastCGI模式启动的，而且disable了执行命令的函数以及putenv()、mail()等常见Bypass的函数。加载插件并选择模式，填入FPM地址开始即可
+
+这里的接口地址需要去查找配置文件/usr/local/etc/php-fpm.d/zz...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/12/29</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/06/23/met1/" >
             
                 <span>Metinfo6.13 两处XSS漏洞分析</span>
@@ -1362,9 +1400,45 @@ POC 2 （覆盖server变量）
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 51
+        Total : 53
         </div>
         <!-- search  -->
         
@@ -1380,6 +1454,11 @@ POC 2 （覆盖server变量）
     
     
         <li class="archive-post-item">
+            <span class="archive-post-date">12/29</span><a class="archive-post-title" href= "/2019/12/29/ant/" >Antsword Bypass_Disable_functions的五种模式简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
             <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/2019/12/06/offensive/" >域渗透之Offensive</a>
         </li>
     
@@ -1391,6 +1470,11 @@ POC 2 （覆盖server变量）
     
         <li class="archive-post-item">
             <span class="archive-post-date">11/23</span><a class="archive-post-title" href= "/2019/11/23/vulnstack1/" >域渗透之Vulnstack1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/22</span><a class="archive-post-title" href= "/2019/10/22/jwt/" >jwt</a>
         </li>
     
     
@@ -1669,6 +1753,8 @@ POC 2 （覆盖server变量）
     
         <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
     
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
     
         <span class="sidebar-tag-name" data-tags="unserializable"><span class="iconfont-archer">&#xe606;</span>unserializable</span>
@@ -1683,8 +1769,6 @@ POC 2 （覆盖server变量）
     
         <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
-        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
-    
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
         <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
@@ -1695,9 +1779,9 @@ POC 2 （覆盖server变量）
     
         <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
-        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
-    
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     

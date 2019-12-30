@@ -359,6 +359,44 @@ height:50vh;
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/12/29/ant/" >
+            
+                <span>Antsword Bypass_Disable_functions的五种模式简析</span>
+        </a>
+        <div class="abstract-content">
+            Abstract这几天不管是测试还是使用靶机都好几次遇上了Disabled Functions的情况，于是抽空来探究下插件的实现原理。
+项目传送门
+PHP-FPM/FastCGI配套使用蚁剑上的一个disable_functions项目：传送门
+用蚁剑直接连接一句话
+
+虚拟终端下执行命令失败，来看下phpinfo
+
+可以看到PHP是FPM/FastCGI模式启动的，而且disable了执行命令的函数以及putenv()、mail()等常见Bypass的函数。加载插件并选择模式，填入FPM地址开始即可
+
+这里的接口地址需要去查找配置文件/usr/local/etc/php-fpm.d/zz...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/12/29</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/12/06/offensive/" >
             
                 <span>域渗透之Offensive</span>
@@ -461,6 +499,39 @@ Web入侵从Web口入手: 192.168.52.143
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
     
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnstack">vulnstack</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2019/10/22/jwt/" >
+            
+                <span>jwt</span>
+        </a>
+        <div class="abstract-content">
+            Abstract
+​    Json Web Token 简称JWT，是为了在网络应用环境间传递声明而执行的一种基于JSON的开放标准。该token被设计为紧凑且安全的，特别适用于分布式站点的单点登录（SSO）场景。JWT的声明一般被用来在身份提供者和服务提供者间传递被认证的用户身份信息，以便于从资源服务器获取资源，也可以增加一些额外的其它业务逻辑所必须的声明信息，该token也可直接被用于认证，也可被加密。
+
+简单的说，JWT是一种非常轻量级的业务流程管理规范，用于用户和服务器之间安全可靠地传递信息 
+
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/10/22</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "web">web</a>
     
 </div>
             
@@ -636,88 +707,6 @@ Maven
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "java">java</a>
     
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "deserialize">deserialize</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/07/20/fastjson/" >
-            
-                <span>Fastjson 反序列化漏洞简析</span>
-        </a>
-        <div class="abstract-content">
-            
-Fastjson是由阿里开发的JSON库，据说是最快的JSON库
-传送门：https://github.com/alibaba/fastjson
-
-环境搭建
-环境：fastjson1.2.24+tomcat8.5+jdk 1.8.0_102
-
-war包地址：传送门
-
-
-下载war包之后，首先利用tomcat部署完成解压，然后在IDEA中导入解压后的文件夹，配置外部的lib路径和Tomcat，运行即可
-
-TemplatesImpl 链
-Fastjson通过bytecodes传入base64编码的恶意类字节码，自动调用getoutputProperties()，而且会实例化传入的恶意类，调...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/07/20</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "java">java</a>
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "deserialize">deserialize</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/06/23/met1/" >
-            
-                <span>Metinfo6.13 两处XSS漏洞分析</span>
-        </a>
-        <div class="abstract-content">
-            前言马上要考试了，然后就简单的分析下俩个XSS的洞，开始准备考试了…
-XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利用上一处变量覆盖的点
-
-关键在这个update子句中，将authcode()处理后的$turefile写入到数据库中字段为met_adminfile，跟进函数authcode()
-
-用于进行加解密的函数，并没有对其内容进行检测、过滤。而该变量为数组$url_array[]倒数第二项。这里导入了admin/include/common.inc.php
-
-这里对传入的COOKIE、POST、GET的参数进行过滤，然后赋值到全局...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/06/23</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "XSS">XSS</a>
     
 </div>
             
@@ -1631,9 +1620,45 @@ XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利�
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 51
+        Total : 53
         </div>
         <!-- search  -->
         
@@ -1649,6 +1674,11 @@ XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利�
     
     
         <li class="archive-post-item">
+            <span class="archive-post-date">12/29</span><a class="archive-post-title" href= "/2019/12/29/ant/" >Antsword Bypass_Disable_functions的五种模式简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
             <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/2019/12/06/offensive/" >域渗透之Offensive</a>
         </li>
     
@@ -1660,6 +1690,11 @@ XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利�
     
         <li class="archive-post-item">
             <span class="archive-post-date">11/23</span><a class="archive-post-title" href= "/2019/11/23/vulnstack1/" >域渗透之Vulnstack1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/22</span><a class="archive-post-title" href= "/2019/10/22/jwt/" >jwt</a>
         </li>
     
     
@@ -1938,6 +1973,8 @@ XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利�
     
         <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
     
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
     
         <span class="sidebar-tag-name" data-tags="unserializable"><span class="iconfont-archer">&#xe606;</span>unserializable</span>
@@ -1952,8 +1989,6 @@ XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利�
     
         <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
-        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
-    
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
         <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
@@ -1964,9 +1999,9 @@ XSS 1(前台存储型)漏洞点在admin/login/login_check.php，同样可以利�
     
         <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
-        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
-    
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     

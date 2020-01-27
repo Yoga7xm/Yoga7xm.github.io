@@ -359,6 +359,52 @@ height:50vh;
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2018/11/20/xxe-study/" >
+            
+                <span>XXE Study</span>
+        </a>
+        <div class="abstract-content">
+            0x00 前言XXE是一种很常见的漏洞类型危害也挺大的，如果一个web服务器通过用户上传处理XML文件或POST请求时，那么可能就会存在漏洞。
+前段时间比较出名的微信支付的xxe漏洞
+0x02 漏洞简介XXE 就是XML外部实体注入。当服务器允许引用外部实体时，通过构造恶意内容来攻击网站
+
+2.1 产生原因解析xml文件时允许加载外部实体，并且实体的URL支持file://和PHP://等协议，没有过滤用户提交的参数。
+2.2 危害
+读取任意文件
+执行系统命令
+探测内网端口
+攻击内网网站
+DOS攻击
+….
+
+0x03 XML+DTD基础知识XML：
+
+XML 指可扩展标记语言（EXten...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/11/20</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "web">web</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "xxe">xxe</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2018/11/17/cg-ctf/" >
             
                 <span>CG-CTF WriteUp</span>
@@ -1573,9 +1619,24 @@ wls-wsat目录表
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 56
+        Total : 57
         </div>
         <!-- search  -->
         
@@ -1606,6 +1667,11 @@ wls-wsat目录表
     
         <li class="archive-post-item">
             <span class="archive-post-date">12/29</span><a class="archive-post-title" href= "/2019/12/29/ant/" >Antsword Bypass_Disable_functions简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/20</span><a class="archive-post-title" href= "/2019/12/20/vulnstack3/" >域渗透之vulnstack3</a>
         </li>
     
     
@@ -1892,9 +1958,9 @@ wls-wsat目录表
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
-    
         <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
+    
+        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
     
         <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
     
@@ -1904,13 +1970,13 @@ wls-wsat目录表
     
         <span class="sidebar-tag-name" data-tags="php"><span class="iconfont-archer">&#xe606;</span>php</span>
     
-        <span class="sidebar-tag-name" data-tags="java"><span class="iconfont-archer">&#xe606;</span>java</span>
-    
-        <span class="sidebar-tag-name" data-tags="deserialize"><span class="iconfont-archer">&#xe606;</span>deserialize</span>
-    
         <span class="sidebar-tag-name" data-tags="CORS"><span class="iconfont-archer">&#xe606;</span>CORS</span>
     
         <span class="sidebar-tag-name" data-tags="JSONP"><span class="iconfont-archer">&#xe606;</span>JSONP</span>
+    
+        <span class="sidebar-tag-name" data-tags="java"><span class="iconfont-archer">&#xe606;</span>java</span>
+    
+        <span class="sidebar-tag-name" data-tags="deserialize"><span class="iconfont-archer">&#xe606;</span>deserialize</span>
     
         <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
     
@@ -1924,15 +1990,13 @@ wls-wsat目录表
     
         <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
     
-        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
-    
         <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
     
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
-        <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
-    
         <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
+    
+        <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
         <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
     
@@ -1941,6 +2005,8 @@ wls-wsat目录表
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
     
         <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
+        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     

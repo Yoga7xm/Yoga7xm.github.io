@@ -346,6 +346,40 @@
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/09/30/http/" >
+            
+                <span>HTTP 请求走私</span>
+        </a>
+        <div class="abstract-content">
+            前言偶然看到的这个攻击方式,感觉在日常的挖洞环境中能够遇见的,故学习一波加深理解.
+HTTP Request Smuggling最早是由Watchfire提出的，但是利用条件比较困难所以一直就被忽略了。
+形成原因
+自从HTTP/1.1以来，广泛支持通过单个底层TCP或SSL/TLS套接字发送多个HTTP请求。该协议只需将HTTP请求简单的拼接在一起，然后服务通过解析HTTP头部来确定每个请求的结束位置和下一个请求开始的位置。
+
+现代Web系统通常会使用反向代理服务器来负责转发用户以及源站服务器的流量，这样，为节省建立连接的时间，通常会重用反向代理服务器与源站服务器的TCP连接，也就是说所...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/09/30</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "web">web</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/09/02/rmi/" >
             
                 <span>RMI 反序列化漏洞简析</span>
@@ -658,44 +692,6 @@ Phar archives are best characterized as a convenient way to group several files 
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
     
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "unserialize">unserialize</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/05/28/rfi-getshell/" >
-            
-                <span>RFI Getshell By SMB &amp; WebDav</span>
-        </a>
-        <div class="abstract-content">
-            前言由于php.ini中，allow_url_fopen默认是关闭状态的，所以不允许加载外界URL。但是最近刷到了几条Trick来绕过，于是记载学习下。思路其实也挺清晰的，在allow_url_fopen和allow_url_include均为off的情况下，使用SMB URL(UNC路径)可以加载资源实现RCE。UNC中是不能出现冒号的，而且为Windows系统专用。
-环境
-Windows10：两项配置项均已关闭
-Kali：samba
-Win7：文件共享
-
-一个小Demo文件跑在Win10上
-12&lt;?phpinclude($_GET[&apos;file&apos;]);
-
-SM...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/05/28</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "RFI">RFI</a>
     
 </div>
             
@@ -1618,9 +1614,20 @@ SM...
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 57
+        Total : 58
         </div>
         <!-- search  -->
         
@@ -1633,6 +1640,11 @@ SM...
     
     <div class="archive-year"> 2020 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/2020/01/15/8581/" >CVE-2018-8185 Exchange SSRF漏洞利用及分析</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -1942,13 +1954,15 @@ SM...
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
+        <span class="sidebar-tag-name" data-tags="Exchange"><span class="iconfont-archer">&#xe606;</span>Exchange</span>
     
         <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
     
-        <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
+        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
     
         <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
     
         <span class="sidebar-tag-name" data-tags="blog"><span class="iconfont-archer">&#xe606;</span>blog</span>
     
@@ -1964,9 +1978,9 @@ SM...
     
         <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
     
-        <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
-    
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
     
         <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
     
@@ -1974,11 +1988,9 @@ SM...
     
         <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
     
-        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
-    
         <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
     
-        <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
+        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
     
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
@@ -1988,9 +2000,11 @@ SM...
     
         <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
     
-        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+        <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     

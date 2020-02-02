@@ -22,7 +22,7 @@
     <meta name="description" content="">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <title>CVE-2018-8185 Exchange SSRF漏洞利用及分析 · Yoga7xm&#39;s Blog</title>
+    <title>Exchange SSRF漏洞利用及分析 · Yoga7xm&#39;s Blog</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -217,7 +217,7 @@
                 <a href="/" >Yoga7xm&#39;s Blog</a>
             </div>
             <div class="post-title">
-                <a href="#" class="post-name">CVE-2018-8185 Exchange SSRF漏洞利用及分析</a>
+                <a href="#" class="post-name">Exchange SSRF漏洞利用及分析</a>
             </div>
     </div>
     
@@ -247,7 +247,7 @@ height:50vh;
         <h1 class="intro-title">
             <!-- 主页  -->
             
-            CVE-2018-8185 Exchange SSRF漏洞利用及分析
+            Exchange SSRF漏洞利用及分析
             <!-- 404 -->
             
         </h1>
@@ -403,7 +403,7 @@ height:50vh;
         <div class="container container-unloaded">
             <main class="main post-page">
     <article class="article-entry">
-        <h2 id="Abstruct"><a href="#Abstruct" class="headerlink" title="Abstruct"></a>Abstruct</h2><p>这个洞是去年提出来的，攻击手法非常经典，较为全面的使用了NTLM中继攻击，值得去复现分析一波的Orz</p>
+        <h2 id="Abstruct"><a href="#Abstruct" class="headerlink" title="Abstruct"></a>Abstruct</h2><p><code>CVE-2018-8581</code>这个洞是去年提出来的，攻击手法非常经典，较为全面的使用了NTLM中继攻击，值得去复现分析一波的Orz</p>
 <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>首先需要搭建一个域环境，然后在另一台server12的域成员机器中安装Exchange2013</p>
 <p>Exchage2013 下载链接(迅雷创建任务下载)：<a href="https://download.microsoft.com/download/8/4/9/8494E4ED-8FA8-40CA-9E89-B9317995AD7E/Exchange2013-x64-SP1.exe" target="_blank" rel="noopener">exe</a></p>
 <p>Exchange 详细安装步骤参考：<a href="https://www.cnblogs.com/jianyus/p/3170732.html" target="_blank" rel="noopener">传送门</a></p>
@@ -462,7 +462,7 @@ height:50vh;
 <p>回到<code>qwer</code>这里，可以看见邮件已经转发给自己了</p>
 <p><img src="/2020/01/15/8581/qwer.png" alt></p>
 <p>结合官方给出EWS接口构造POST数据包能够进行更多的邮件操作：<a href="https://docs.microsoft.com/zh-cn/exchange/client-developer/web-service-reference/ews-operations-in-exchange" target="_blank" rel="noopener">传送门</a></p>
-<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><h3 id="漏洞起因"><a href="#漏洞起因" class="headerlink" title="漏洞起因"></a>漏洞起因</h3><p>这个攻击手法是利用了<strong>SSRF+NTLM身份验证缺陷</strong>来做的</p>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><h3 id="漏洞起因"><a href="#漏洞起因" class="headerlink" title="漏洞起因"></a>漏洞起因</h3><p>这个攻击手法是用<strong>SSRF+NTLM身份验证缺陷</strong>来做的</p>
 <p>SSRF位于<code>PushSubScription</code>接口处，从Request中取出URL然后存入<code>clientUrl</code>，后续进行<code>Notification</code>消息发送的时候，直接传入<code>clientUrl</code></p>
 <img src="/2020/01/15/8581/push.png" style="zoom:100%;">
 
@@ -485,7 +485,7 @@ height:50vh;
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&apos;DS-Replication-Get-Changes&apos; = 1131f6aa-9c07-11d1-f79f-00c04fc2dcd2</span><br><span class="line">&apos;DS-Replication-Get-Changes-All&apos; = 1131f6ad-9c07-11d1-f79f-00c04fc2dcd2</span><br></pre></td></tr></table></figure>
 
 <p> <strong>NTLM_NEGOTIATE</strong></p>
-<p>Exchange利用NTLM SSP生成的Type 1消息发送给攻击者Kali，然后Kali将其重放给DC，用作LDAP身份验证的Type 1消息</p>
+<p>第一次访问Kali Relay时，返回401未认证状态和<code>WWW-Authenticate:NTLM</code>响应头，Exchange收到之后就开始调用NTLM SSP生成Type 1消息，然后发送给攻击者Kali服务端。Kali收到后将其重放给DC，用作LDAP身份验证的Type 1消息</p>
 <p><img src="/2020/01/15/8581/nego.png" alt></p>
 <p><strong>Challenge</strong></p>
 <p>DC接收到由Kali发来的Type 1消息，然后传入NTLMSSP拿到Challenge并返回给Kali，后者将其作为HTTP响应传回给Exchange</p>
@@ -1493,6 +1493,8 @@ top:50vh;
     
     
     
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
         Total : 58
@@ -1511,7 +1513,7 @@ top:50vh;
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/2020/01/15/8581/" >CVE-2018-8185 Exchange SSRF漏洞利用及分析</a>
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/2020/01/15/8581/" >Exchange SSRF漏洞利用及分析</a>
         </li>
     
     
@@ -1822,11 +1824,11 @@ top:50vh;
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
+        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
+    
         <span class="sidebar-tag-name" data-tags="Exchange"><span class="iconfont-archer">&#xe606;</span>Exchange</span>
     
         <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
-    
-        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
     
         <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
     

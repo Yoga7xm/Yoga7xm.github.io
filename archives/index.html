@@ -346,6 +346,39 @@
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2020/02/02/prepare/" >
+            
+                <span>Mysql预编译的二三事</span>
+        </a>
+        <div class="abstract-content">
+            Abstract使用的环境是phpstudy自带的mysql-5.5.53 + Wireshark
+集成环境默认是不会打开log功能，需要在my.ini中自行添加以下配置项，重启即可
+1234567#错误日志log-error="E:/phpstudy/PHPTutorial/MySQL/logs/error.log"  #sql语句log="E:/phpstudy/PHPTutorial/MySQL/logs/mysql.log"  long_query_time=2  #慢查询日志log-slow-queries= "E:/phpstudy/PHPTutorial/MySQL/log...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/02/02</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "Mysql">Mysql</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "Web">Web</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2020/01/15/8581/" >
             
                 <span>Exchange SSRF漏洞利用及分析</span>
@@ -377,9 +410,9 @@ Kali：192.1...
             
             <div class= abstract-tags >
     
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "Exchange">Exchange</a>
-    
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "Exchange">Exchange</a>
     
 </div>
             
@@ -693,43 +726,6 @@ Header第一部分头部解码后表示一个简单的JSON对象，一般来说�
             <div class= abstract-tags >
     
         <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "web">web</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/10/13/smtp/" >
-            
-                <span>邮件安全简析</span>
-        </a>
-        <div class="abstract-content">
-            Abstract邮件系统的几个概念：
-
-MUA： Mail User Agent ，邮件用户代理。也就是通常说的outlook、foxmail的收发管理软件， 假如MUA 是个网站，则称它为 webmail。
-MTA： Mail Transfer Agent，邮件传输代理。就是那些Email服务提供商，比如网易、新浪等等或者自己搭建的SMTP服务器
-MDA： Mail Delivery Agent，邮件投递代理。将MTA接收的信件依照信件的流向（根据头信息）将该信件放置到本机账户下的邮件文件中（收件箱），或者再经由MTA将信件送到下个MTA。
-
-
-综上，收发电子邮件的过程是：
-1发件人 ...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/10/13</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "smtp">smtp</a>
     
 </div>
             
@@ -1667,9 +1663,24 @@ MDA： Mail Delivery Agent，邮件投递代理。将MTA接收的信件依照信
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 58
+        Total : 59
         </div>
         <!-- search  -->
         
@@ -1682,6 +1693,11 @@ MDA： Mail Delivery Agent，邮件投递代理。将MTA接收的信件依照信
     
     <div class="archive-year"> 2020 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/02</span><a class="archive-post-title" href= "/2020/02/02/prepare/" >Mysql预编译的二三事</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -1996,11 +2012,11 @@ MDA： Mail Delivery Agent，邮件投递代理。将MTA接收的信件依照信
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
+    
         <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
     
         <span class="sidebar-tag-name" data-tags="Exchange"><span class="iconfont-archer">&#xe606;</span>Exchange</span>
-    
-        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
     
         <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
     
@@ -2020,21 +2036,23 @@ MDA： Mail Delivery Agent，邮件投递代理。将MTA接收的信件依照信
     
         <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
     
-        <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
-    
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
     
+        <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
+    
         <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
+    
+        <span class="sidebar-tag-name" data-tags="Mysql"><span class="iconfont-archer">&#xe606;</span>Mysql</span>
+    
+        <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
     
         <span class="sidebar-tag-name" data-tags="redis"><span class="iconfont-archer">&#xe606;</span>redis</span>
     
         <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
     
-        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
-    
         <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
     
-        <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
+        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
     
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
@@ -2042,11 +2060,13 @@ MDA： Mail Delivery Agent，邮件投递代理。将MTA接收的信件依照信
     
         <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
     
-        <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
+        <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
     
         <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
         <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
     

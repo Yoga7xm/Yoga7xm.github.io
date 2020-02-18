@@ -346,6 +346,39 @@
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2020/02/17/javaxxe/" >
+            
+                <span>XXE in Java</span>
+        </a>
+        <div class="abstract-content">
+            Abstract之前接触的XXE基本都是php的，但是libxml在2.9.0以后，默认不解析外部实体…所以来看看Java中XXE的情况
+XML-DTD文件格式
+1234&lt;!DOCTYPE 根元素 [&lt;!ENTITY 内部普通实体名 &quot;实体所代表的字符串&quot;&gt;]&gt;&lt;!DOCTYPE 根元素 [&lt;!ENTITY 外部普通实体名 SYSTEM &quot;外部实体的URI&quot;&gt;]&gt;&lt;!DOCTYPE 根元素 [&lt;!ENTITY % 内部参数实体名 &quot;实体所代表的字符串&quot;&gt;]&gt;...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/02/17</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "java">java</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "xxe">xxe</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2020/02/02/prepare/" >
             
                 <span>Mysql预编译的二三事</span>
@@ -698,44 +731,10 @@ Web入侵从Web口入手: 192.168.52.143
         </div>
     </article>
     
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/10/22/jwt/" >
-            
-                <span>JWT安全简析</span>
-        </a>
-        <div class="abstract-content">
-            Abstract
-Json Web Token 简称JWT，是一种紧凑的 URL 安全方式，用于表示在双方之间传输的声明。JWT 中的声明被编码为使用JSON Web 签名（JWS）进行数字签名的 JSON 对象。——IETF
-
-简单的说，JWT是一种非常轻量级的业务流程管理规范，用于用户和服务器之间安全可靠地传递信息，常用于前后端分离、Restful API配合使用构建身份认证机制.
-JWT结构jwt有三大部分组成，用小数点分割——header.payload.signature
-Header第一部分头部解码后表示一个简单的JSON对象，一般来说这个对象描述了JWT所使用的签名算法和类...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/10/22</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "web">web</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
     <!-- paginator  -->
     
     <nav class="page-nav">
-        <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/6/">6</a><a class="extend next" rel="next" href="/archives/page/2/">NEXT &amp;#62;</a>
+        <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><a class="page-number" href="/archives/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/7/">7</a><a class="extend next" rel="next" href="/archives/page/2/">NEXT &amp;#62;</a>
     </nav>
     
 </main>
@@ -1693,9 +1692,16 @@ Header第一部分头部解码后表示一个简单的JSON对象，一般来说�
     
     
     
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 60
+        Total : 61
         </div>
         <!-- search  -->
         
@@ -1708,6 +1714,11 @@ Header第一部分头部解码后表示一个简单的JSON对象，一般来说�
     
     <div class="archive-year"> 2020 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/17</span><a class="archive-post-title" href= "/2020/02/17/javaxxe/" >XXE in Java</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -2032,15 +2043,15 @@ Header第一部分头部解码后表示一个简单的JSON对象，一般来说�
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
-    
         <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
     
-        <span class="sidebar-tag-name" data-tags="Exchange"><span class="iconfont-archer">&#xe606;</span>Exchange</span>
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
     
         <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
     
         <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="Exchange"><span class="iconfont-archer">&#xe606;</span>Exchange</span>
     
         <span class="sidebar-tag-name" data-tags="blog"><span class="iconfont-archer">&#xe606;</span>blog</span>
     
@@ -2054,6 +2065,8 @@ Header第一部分头部解码后表示一个简单的JSON对象，一般来说�
     
         <span class="sidebar-tag-name" data-tags="deserialize"><span class="iconfont-archer">&#xe606;</span>deserialize</span>
     
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
         <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
@@ -2064,29 +2077,27 @@ Header第一部分头部解码后表示一个简单的JSON对象，一般来说�
     
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
     
-        <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
-    
         <span class="sidebar-tag-name" data-tags="redis"><span class="iconfont-archer">&#xe606;</span>redis</span>
     
         <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
     
         <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
     
+        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
+    
         <span class="sidebar-tag-name" data-tags="Mysql"><span class="iconfont-archer">&#xe606;</span>Mysql</span>
     
         <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
     
-        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
+        <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
     
         <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
     
         <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
     
-        <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
-    
         <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
-        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+        <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
     

@@ -359,6 +359,45 @@ height:50vh;
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/01/15/box/" >
+            
+                <span>Vulnhub之Billu_b0x</span>
+        </a>
+        <div class="abstract-content">
+            0x00 前言
+路漫漫其修远兮，吾将上下而求索
+
+0x01 环境搭建传送门
+
+靶机IP 192.168.1.16 
+攻击机win 192.168.1.11 
+攻击机kali 192.168.1.156 
+攻击机Ubuntu 192.168.1.166 
+
+0x02 Play1.信息收集123456789101112131415PORT   STATE SERVICE VERSION22/tcp open  ssh     OpenSSH 5.9p1 Debian 5ubuntu1.4 (Ubuntu Linux; protocol 2.0)| ssh-hostkey: |   1024 ...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/01/15</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "vulnhub">vulnhub</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/01/10/born2boot/" >
             
                 <span>Vulnhub之born2boot</span>
@@ -691,47 +730,10 @@ http://localhost/sqli/Less-54/?id=-1&#39; union select 1,2,database()--+
         </div>
     </article>
     
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2018/12/01/sqlil/" >
-            
-                <span>sqli-lab(23-37)</span>
-        </a>
-        <div class="abstract-content">
-            0x00 前言十二月如期而至，今天继续干活。
-0x01 Bypass之旅Less-23点开进去，发现Please input the ID as parameter with numeric value一行Tip，于是传入id=1，尝试构造?id=1&#39; and  &#39;1&#39;=&#39;1发现成功绕过。
-payload：
-http://localhost/sqli/Less-23/?id=-1&#39; union select 1,2,3 and &#39;1&#39; =&#39;1
-后面利用方式一直。查看源码发现，过滤了#、--
-sqlmap 利用：
-1pytho...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/12/01</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "sql注入">sql注入</a>
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "web">web</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
     <!-- paginator  -->
     
     <nav class="page-nav">
-        <a class="extend prev" rel="prev" href="/page/4/">&amp;#60; PREV</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/">NEXT &amp;#62;</a>
+        <a class="extend prev" rel="prev" href="/page/4/">&amp;#60; PREV</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/">NEXT &amp;#62;</a>
     </nav>
     
 </main>
@@ -1786,9 +1788,16 @@ sqlmap 利用：
     
     
     
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 60
+        Total : 61
         </div>
         <!-- search  -->
         
@@ -1801,6 +1810,11 @@ sqlmap 利用：
     
     <div class="archive-year"> 2020 </div>
     <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/17</span><a class="archive-post-title" href= "/2020/02/17/javaxxe/" >XXE in Java</a>
+        </li>
     
     
         <li class="archive-post-item">
@@ -2125,15 +2139,15 @@ sqlmap 利用：
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
     
-        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
-    
         <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
     
-        <span class="sidebar-tag-name" data-tags="Exchange"><span class="iconfont-archer">&#xe606;</span>Exchange</span>
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
     
         <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
     
         <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="Exchange"><span class="iconfont-archer">&#xe606;</span>Exchange</span>
     
         <span class="sidebar-tag-name" data-tags="blog"><span class="iconfont-archer">&#xe606;</span>blog</span>
     
@@ -2147,6 +2161,8 @@ sqlmap 利用：
     
         <span class="sidebar-tag-name" data-tags="deserialize"><span class="iconfont-archer">&#xe606;</span>deserialize</span>
     
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
         <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
     
         <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
@@ -2157,29 +2173,27 @@ sqlmap 利用：
     
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
     
-        <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
-    
         <span class="sidebar-tag-name" data-tags="redis"><span class="iconfont-archer">&#xe606;</span>redis</span>
     
         <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
     
         <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
     
+        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
+    
         <span class="sidebar-tag-name" data-tags="Mysql"><span class="iconfont-archer">&#xe606;</span>Mysql</span>
     
         <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
     
-        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
+        <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
     
         <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
     
         <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
     
-        <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
-    
         <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     
-        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+        <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
     
         <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
     

